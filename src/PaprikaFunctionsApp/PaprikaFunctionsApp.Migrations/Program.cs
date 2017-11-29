@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PaprikaFunctionsApp.Common;
+using System;
 
 namespace PaprikaFunctionsApp.Migrations
 {
@@ -6,7 +7,8 @@ namespace PaprikaFunctionsApp.Migrations
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            var table = TableUtilities.GetTable("users");
+            
         }
     }
 }

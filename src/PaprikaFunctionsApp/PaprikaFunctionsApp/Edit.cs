@@ -1,6 +1,7 @@
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using PaprikaFunctionsApp.Common;
 using System;
 using System.IO;
 using System.Linq;
