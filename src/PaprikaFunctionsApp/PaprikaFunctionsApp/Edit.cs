@@ -1,34 +1,37 @@
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
-using System.IO;
-using System.Text;
 using System;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Text;
 
 namespace PaprikaFunctionsApp
 {
-    public static class Load
+    public static class Edit
     {
-        private readonly static CloudStorageAccount _storageAccount =
-            CloudStorageAccount.Parse("UseDevelopmentStorage=true");
 
-        [FunctionName("Load")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "Load")]HttpRequestMessage req, TraceWriter log)
+        [FunctionName("Edit")]
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "/Grammar/Edit")]HttpRequestMessage req, TraceWriter log)
         {
+            string username = req.Headers.GetValues("username").FirstOrDefault();
+            if (string.IsNullOrEmpty(username))
+            {
+                return req.CreateResponse(HttpStatusCode.Unauthorized, "Bad username");
+            }
+
+            string password = req.Headers.GetValues("password").FirstOrDefault();
+            if (string.IsNullOrEmpty(password))
+            {
+                return req.CreateResponse(HttpStatusCode.Unauthorized, "Bad username");
+            }
+
             MultipartMemoryStreamProvider stream;
             try
             {
-                var multipartTask = req.Content.ReadAsMultipartAsync();
-                if (!multipartTask.IsCompleted)
-                {
-                    multipartTask.RunSynchronously();
-                }
-                stream = multipartTask.Result;
+                stream = req.Content.ReadAsMultipartAsync().Result;
             }
             catch (Exception)
             {
@@ -39,12 +42,7 @@ namespace PaprikaFunctionsApp
             try
             {
                 var httpContent = stream.Contents[0];
-                var contentTask = httpContent.ReadAsStringAsync();
-                if (!contentTask.IsCompleted)
-                {
-                    contentTask.RunSynchronously();
-                }
-                fileContent = contentTask.Result;
+                fileContent = httpContent.ReadAsStringAsync().Result;
             }
             catch (Exception)
             {
@@ -63,21 +61,10 @@ namespace PaprikaFunctionsApp
             return req.CreateResponse(HttpStatusCode.Created, "Hello world");
         }
 
-        private static ICloudBlob GetBlockBlob(string username)
-        {
-            const string CONTAINER_NAME = "grammar";
-            CloudBlobClient blobClient = _storageAccount.CreateCloudBlobClient();
-            CloudBlobContainer container = blobClient.GetContainerReference(CONTAINER_NAME);
-            container.CreateIfNotExists();
-
-            string filename = UserUtilities.GetFilenameForUser(username);
-            ICloudBlob blob = container.GetBlockBlobReference(filename);
-            return blob;
-        }
 
         public static void WriteGrammar(string username, string grammar)
         {
-            var blob = GetBlockBlob(username);
+            var blob = BlobUtilities.GetBlockBlob(username);
 
             var grammarBytes = Encoding.UTF8.GetBytes(grammar);
             var memStream = new MemoryStream(grammarBytes);
@@ -86,7 +73,7 @@ namespace PaprikaFunctionsApp
 
         public static string ReadGrammar(string username)
         {
-            var blob = GetBlockBlob(username);
+            var blob = BlobUtilities.GetBlockBlob(username);
 
             var blobStream = blob.OpenRead();
             var tr = new StreamReader(blobStream);

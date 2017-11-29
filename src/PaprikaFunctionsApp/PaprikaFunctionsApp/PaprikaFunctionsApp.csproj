@@ -8,6 +8,9 @@
     <PackageReference Include="WindowsAzure.Storage" Version="8.6.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PaprikaFunctionsApp.Common\PaprikaFunctionsApp.Common.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
