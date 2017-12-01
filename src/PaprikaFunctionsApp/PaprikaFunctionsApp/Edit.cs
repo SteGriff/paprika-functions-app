@@ -15,20 +15,30 @@ namespace PaprikaFunctionsApp
     {
 
         [FunctionName("Edit")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "/Grammar/Edit")]HttpRequestMessage req, TraceWriter log)
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "Grammar/Edit")]HttpRequestMessage req, TraceWriter log)
         {
             string username = req.Headers.GetValues("username").FirstOrDefault();
             if (string.IsNullOrEmpty(username))
             {
-                return req.CreateResponse(HttpStatusCode.Unauthorized, "Bad username");
+                return req.CreateResponse(HttpStatusCode.Unauthorized, "No username received");
             }
 
-            string password = req.Headers.GetValues("password").FirstOrDefault();
-            if (string.IsNullOrEmpty(password))
+            string plainPasswordString = req.Headers.GetValues("password").FirstOrDefault();
+            if (string.IsNullOrEmpty(plainPasswordString))
             {
-                return req.CreateResponse(HttpStatusCode.Unauthorized, "Bad username");
+                return req.CreateResponse(HttpStatusCode.Unauthorized, "No password received");
             }
 
+            //Get the user and check their auth
+            var user = UserUtilities.GetUser(username);
+            var encryptedPassword = Encryptor.Encrypt(plainPasswordString, user.Salt);
+            var isAuthed = encryptedPassword == user.EncryptedPassword;
+            if (!isAuthed)
+            {
+                return req.CreateResponse(HttpStatusCode.Unauthorized, "Incorrect username/password combination");
+            }
+
+            //Get the posted file and decode it
             MultipartMemoryStreamProvider stream;
             try
             {
@@ -52,16 +62,15 @@ namespace PaprikaFunctionsApp
 
             try
             {
-                WriteGrammar("stegriff", fileContent);
+                WriteGrammar(username, fileContent);
             }
             catch (Exception)
             {
                 return req.CreateResponse(HttpStatusCode.InternalServerError, "Failed to write grammar");
             }
 
-            return req.CreateResponse(HttpStatusCode.Created, "Hello world");
+            return req.CreateResponse(HttpStatusCode.Created, "Saved");
         }
-
 
         public static void WriteGrammar(string username, string grammar)
         {
@@ -81,7 +90,6 @@ namespace PaprikaFunctionsApp
             string grammarContent = tr.ReadToEnd();
             return grammarContent;
         }
-
         
     }
 }

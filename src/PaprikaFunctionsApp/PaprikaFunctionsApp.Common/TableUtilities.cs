@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace PaprikaFunctionsApp.Common
 {
@@ -12,13 +13,15 @@ namespace PaprikaFunctionsApp.Common
             CloudTableClient tableClient = AzureStorageProvider.StorageAccount.CreateCloudTableClient();
             CloudTable table = tableClient.GetTableReference(tablename);
             table.CreateIfNotExistsAsync();
-
-            //var query = new TableQuery()
-            //{ FilterString = "" };
-
-            //table.ExecuteQuerySegmentedAsync(query);
-
+            
             return table;
+        }
+
+        public static async Task DropTableAsync(string tablename)
+        {
+            CloudTableClient tableClient = AzureStorageProvider.StorageAccount.CreateCloudTableClient();
+            CloudTable table = tableClient.GetTableReference(tablename);
+            await table.DeleteIfExistsAsync();
         }
     }
 }
