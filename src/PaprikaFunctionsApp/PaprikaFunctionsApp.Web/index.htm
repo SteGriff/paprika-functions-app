@@ -1,0 +1,49 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+<title></title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+</style>
+</head>
+<body>
+<main>
+	<h1>File upload test</h1>
+    <p>HTML Form - No auth</p>
+	<form
+		action="http://localhost:7071/api/Grammar/Edit"
+		method="POST"
+		enctype="multipart/form-data">
+		<input type="file" name="payload">
+		<input type="submit">
+	</form>
+    <p>AJAX</p>
+    <input type="file" class="js-file">
+    <button onclick="submit()">Send</button>
+</main>
+<script>
+    function submit()
+    {
+        var data = new FormData();
+        $.each($('.js-file')[0].files, function (i, file) {
+            data.append('file-' + i, file);
+        });
+
+        $.ajax({
+            url: 'http://localhost:7071/api/Grammar/Edit',
+            data: data,
+            cache: false,
+            contentType: false,
+            processData: false,
+            method: 'POST',
+            complete: function (data) {
+                alert(data);
+                console.log(data);
+            }
+        });
+    }
+</script>
+<script src="jquery-2.2.4.min.js"></script>
+</body>
+</html>

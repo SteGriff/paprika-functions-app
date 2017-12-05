@@ -17,14 +17,22 @@ namespace PaprikaFunctionsApp
         [FunctionName("Edit")]
         public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "Grammar/Edit")]HttpRequestMessage req, TraceWriter log)
         {
-            string username = req.Headers.GetValues("username").FirstOrDefault();
-            if (string.IsNullOrEmpty(username))
+            string username;
+            if (req.Headers.Contains("username"))
             {
+                username = req.Headers.GetValues("username").FirstOrDefault();
+            }
+            else
+            { 
                 return req.CreateResponse(HttpStatusCode.Unauthorized, "No username received");
             }
 
-            string plainPasswordString = req.Headers.GetValues("password").FirstOrDefault();
-            if (string.IsNullOrEmpty(plainPasswordString))
+            string plainPasswordString;
+            if (req.Headers.Contains("password"))
+            {
+                plainPasswordString = req.Headers.GetValues("password").FirstOrDefault();
+            }
+            else
             {
                 return req.CreateResponse(HttpStatusCode.Unauthorized, "No password received");
             }

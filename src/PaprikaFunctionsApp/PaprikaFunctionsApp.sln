@@ -5,9 +5,15 @@ VisualStudioVersion = 15.0.27004.2008
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaprikaFunctionsApp", "PaprikaFunctionsApp\PaprikaFunctionsApp.csproj", "{BB33A0A3-0F47-4D17-9F61-CD5118F11D57}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaprikaFunctionsApp.Common", "PaprikaFunctionsApp.Common\PaprikaFunctionsApp.Common.csproj", "{08E3895C-7892-4517-8A7C-9A4A0F8D8E90}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaprikaFunctionsApp.Common", "PaprikaFunctionsApp.Common\PaprikaFunctionsApp.Common.csproj", "{08E3895C-7892-4517-8A7C-9A4A0F8D8E90}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaprikaFunctionsApp.Migrations", "PaprikaFunctionsApp.Migrations\PaprikaFunctionsApp.Migrations.csproj", "{19103E67-FA32-4487-A89C-3FFE0107E4C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaprikaFunctionsApp.Migrations", "PaprikaFunctionsApp.Migrations\PaprikaFunctionsApp.Migrations.csproj", "{19103E67-FA32-4487-A89C-3FFE0107E4C3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PaprikaFunctionsApp.Web", "PaprikaFunctionsApp.Web", "{14350E10-D0DE-4DD6-807C-E85EEC455B7F}"
+	ProjectSection(SolutionItems) = preProject
+		PaprikaFunctionsApp.Web\index.htm = PaprikaFunctionsApp.Web\index.htm
+		PaprikaFunctionsApp.Web\jquery-2.2.4.min.js = PaprikaFunctionsApp.Web\jquery-2.2.4.min.js
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
