@@ -18,7 +18,7 @@ namespace PaprikaFunctionsApp.Common
         public static UserEntity GetUser(string username)
         {
             var userTable = TableUtilities.GetTable("users");
-            var query = new TableQuery<UserEntity>() { FilterString = TableQuery.GenerateFilterCondition("username", "eq", username) };
+            var query = new TableQuery<UserEntity>() { FilterString = TableQuery.GenerateFilterCondition("PartitionKey", "eq", username) };
             var results = userTable.ExecuteQuerySegmentedAsync(query, new TableContinuationToken()).Result;
             var user = results.FirstOrDefault();
             return user;

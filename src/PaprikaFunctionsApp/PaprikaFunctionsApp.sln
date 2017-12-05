@@ -9,10 +9,26 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaprikaFunctionsApp.Common"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaprikaFunctionsApp.Migrations", "PaprikaFunctionsApp.Migrations\PaprikaFunctionsApp.Migrations.csproj", "{19103E67-FA32-4487-A89C-3FFE0107E4C3}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PaprikaFunctionsApp.Web", "PaprikaFunctionsApp.Web", "{14350E10-D0DE-4DD6-807C-E85EEC455B7F}"
-	ProjectSection(SolutionItems) = preProject
-		PaprikaFunctionsApp.Web\index.htm = PaprikaFunctionsApp.Web\index.htm
-		PaprikaFunctionsApp.Web\jquery-2.2.4.min.js = PaprikaFunctionsApp.Web\jquery-2.2.4.min.js
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "PaprikaFunctionsApp.Web", "PaprikaFunctionsApp.Web\", "{3E56B629-3F7A-421F-B7A4-07E2A9273A56}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.6.1"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_54208"
+		Debug.AspNetCompiler.PhysicalPath = "PaprikaFunctionsApp.Web\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_54208\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_54208"
+		Release.AspNetCompiler.PhysicalPath = "PaprikaFunctionsApp.Web\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_54208\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "54208"
+		SlnRelativePath = "PaprikaFunctionsApp.Web\"
+		DefaultWebSiteLanguage = "Visual C#"
 	EndProjectSection
 EndProject
 Global
@@ -33,6 +49,10 @@ Global
 		{19103E67-FA32-4487-A89C-3FFE0107E4C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19103E67-FA32-4487-A89C-3FFE0107E4C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19103E67-FA32-4487-A89C-3FFE0107E4C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E56B629-3F7A-421F-B7A4-07E2A9273A56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E56B629-3F7A-421F-B7A4-07E2A9273A56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E56B629-3F7A-421F-B7A4-07E2A9273A56}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E56B629-3F7A-421F-B7A4-07E2A9273A56}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

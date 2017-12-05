@@ -17,7 +17,6 @@ namespace PaprikaFunctionsApp.Common.Models
         public UserEntity() { }
 
         public DateTime RegistrationDate { get; set; }
-        public string Salt { get { return RowKey; } }
         public string EncryptedPassword { get; set; }
     }
 }

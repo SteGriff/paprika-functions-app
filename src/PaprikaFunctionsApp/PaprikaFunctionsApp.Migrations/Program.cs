@@ -13,7 +13,7 @@ namespace PaprikaFunctionsApp.Migrations
         {
             var usersTable = TableUtilities.GetTable("users");
 
-            //TableUtilities.DropTableAsync("users").Wait();
+            TableUtilities.DropTableAsync("users").Wait();
             MakeAndCheckUsers(usersTable);
 
         }

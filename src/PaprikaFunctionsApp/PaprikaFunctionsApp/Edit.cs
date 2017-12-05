@@ -15,37 +15,23 @@ namespace PaprikaFunctionsApp
     {
 
         [FunctionName("Edit")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "Grammar/Edit")]HttpRequestMessage req, TraceWriter log)
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", "options", Route = "Grammar/Edit")]HttpRequestMessage req, TraceWriter log)
         {
-            string username;
-            if (req.Headers.Contains("username"))
+            //Yes, we can
+            if (req.Method == HttpMethod.Options)
             {
-                username = req.Headers.GetValues("username").FirstOrDefault();
-            }
-            else
-            { 
-                return req.CreateResponse(HttpStatusCode.Unauthorized, "No username received");
+                return req.CreateResponse(HttpStatusCode.OK);
             }
 
-            string plainPasswordString;
-            if (req.Headers.Contains("password"))
+            //Check authentication and kick user with 401 if there's a problem
+            var authChecker = new Authenticator();
+            var authenticationStatus = authChecker.IsAuthorised(req);
+            if (!authenticationStatus.Success)
             {
-                plainPasswordString = req.Headers.GetValues("password").FirstOrDefault();
-            }
-            else
-            {
-                return req.CreateResponse(HttpStatusCode.Unauthorized, "No password received");
+                return authenticationStatus.Attachment;
             }
 
-            //Get the user and check their auth
-            var user = UserUtilities.GetUser(username);
-            var encryptedPassword = Encryptor.Encrypt(plainPasswordString, user.Salt);
-            var isAuthed = encryptedPassword == user.EncryptedPassword;
-            if (!isAuthed)
-            {
-                return req.CreateResponse(HttpStatusCode.Unauthorized, "Incorrect username/password combination");
-            }
-
+            //Authenticated user:-
             //Get the posted file and decode it
             MultipartMemoryStreamProvider stream;
             try
@@ -70,7 +56,7 @@ namespace PaprikaFunctionsApp
 
             try
             {
-                WriteGrammar(username, fileContent);
+                WriteGrammar(authChecker.Username, fileContent);
             }
             catch (Exception)
             {
