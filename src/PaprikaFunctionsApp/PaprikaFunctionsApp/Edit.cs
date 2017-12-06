@@ -1,6 +1,7 @@
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using Paprika.Net;
 using PaprikaFunctionsApp.Common;
 using System;
 using System.IO;
@@ -57,6 +58,28 @@ namespace PaprikaFunctionsApp
                 return req.CreateResponse(HttpStatusCode.InternalServerError, "Failed to write grammar");
             }
 
+            Core engine;
+            try
+            {
+                var grammarLines = fileContent.Split(new char[] { '\n' });
+                engine = new Core();
+                engine.LoadGrammarFromString(grammarLines);
+            }
+            catch (Exception ex)
+            {
+                return req.CreateResponse(HttpStatusCode.InternalServerError, "Failed to parse grammar: " + ex.Message);
+            }
+
+            try
+            {
+                var gramCache = new GrammarCache();
+                gramCache.WriteToCache(engine.Grammar, authChecker.Username, DateTime.Now);
+            }
+            catch (Exception ex)
+            {
+                return req.CreateResponse(HttpStatusCode.InternalServerError, "Failed to cache grammar: " + ex.Message);
+            }
+ 
             return req.CreateResponse(HttpStatusCode.Created, "Saved");
         }
 
