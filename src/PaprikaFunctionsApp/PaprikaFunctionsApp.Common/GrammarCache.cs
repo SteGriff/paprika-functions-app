@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using Newtonsoft.Json;
+using System.Collections;
 
 namespace PaprikaFunctionsApp.Common
 {
@@ -28,7 +30,15 @@ namespace PaprikaFunctionsApp.Common
             var query = new TableQuery<GrammarEntity>() { FilterString = TableQuery.GenerateFilterCondition("PartitionKey", "eq", username) };
             var results = table.ExecuteQuerySegmentedAsync(query, new TableContinuationToken()).Result;
             var latestGrammar = results.Results.OrderByDescending(g => g.RowKey).FirstOrDefault();
-            return latestGrammar.Grammar;
+            try
+            {
+                var grammarObject = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(latestGrammar.GrammarJson);
+                return grammarObject;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }

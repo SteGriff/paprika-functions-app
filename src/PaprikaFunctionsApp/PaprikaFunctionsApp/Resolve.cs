@@ -7,36 +7,30 @@ using Microsoft.Azure.WebJobs.Host;
 using Paprika.Net;
 using System;
 using Paprika.Net.Exceptions;
+using PaprikaFunctionsApp.Common;
 
 namespace PaprikaFunctionsApp
 {
     public static class Resolve
     {
         [FunctionName("Resolve")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "Resolve/{query}")]HttpRequestMessage req, string query, TraceWriter log)
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "Grammar/Resolve/{query}")]HttpRequestMessage req, string query, TraceWriter log)
         {
             log.Info(string.Format("Incoming Resolve, q='{0}'", query));
 
-            var grammarLines = @"
-* phrase
-here are my [adjective] [things]
-these [things] are all [adjective]
-we want [things]! [adjective] [things]!
+            //Check authentication and kick user with 401 if there's a problem
+            var authChecker = new Authenticator();
+            var authenticationStatus = authChecker.IsAuthorised(req);
+            if (!authenticationStatus.Success)
+            {
+                return authenticationStatus.Attachment;
+            }
 
-* adjective
-tiny
-inscrutable
-excitable
-
-* things
-politicians
-lawyers
-kittens
-particles
-".Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            var cache = new GrammarCache();
+            var grammarObject = cache.ReadFromCache(authChecker.Username);
 
             var engine = new Core();
-            engine.LoadGrammarFromString(grammarLines);
+            engine.LoadThisGrammar(grammarObject);
 
             string answer = "";
             try

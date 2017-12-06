@@ -9,44 +9,70 @@
 </head>
 <body>
 <main>
-	<h1>File upload test</h1>
-    <p>AJAX</p>
-    <input type="file" class="js-file">
+	<h1>Paprika Functions App Test</h1>
+
+    <p>Auth (all requests)</p>
     <input type="text" class="js-username" value="adam" />
     <input type="password" class="js-password" value="adampassword" />
-    <button onclick="submit()">Send</button>
+
+    <p>Upload grammar</p>
+    <input type="file" class="js-file">
+    <button type="button" onclick="upload()">Upload</button>
+
+    <p>Query</p>
+    <input type="text" class="js-query">
+    <button type="button" onclick="query()">Send</button>
+
 </main>
 <script>
-    function submit()
+    function getOptions()
+    {
+        var headers = {
+            'username': $('.js-username').val(),
+            'password': $('.js-password').val()
+        };
+
+        return {
+            beforeSend: function (request) {
+                request.setRequestHeader("username", headers.username);
+                request.setRequestHeader("password", headers.password);
+            },
+            cache: false,
+            contentType: false,
+            processData: false,
+            method: 'POST',
+            complete: function onResponse(data) {
+                console.log(data);
+                var message = data.status + ' ' + data.statusText + ': ' + data.responseText;
+                alert(message);
+            }
+        }
+    }
+
+    function upload()
     {
         var data = new FormData();
         $.each($('.js-file')[0].files, function (i, file) {
             data.append('file-' + i, file);
         });
 
-        var headers = {
-            'username': $('.js-username').val(),
-            'password': $('.js-password').val()
-        };
-
-        $.ajax({
-            url: 'http://localhost:7071/api/Grammar/Edit',
-            beforeSend: function (request) {
-                request.setRequestHeader("username", headers.username);
-                request.setRequestHeader("password", headers.password);
-            },
-            data: data,
-            cache: false,
-            contentType: false,
-            processData: false,
-            method: 'POST',
-            complete: function (data) {
-                console.log(data);
-                var message = data.status + ' ' + data.statusText + ': ' + data.responseText;
-                alert(message);
-            }
-        });
+        var options = getOptions();
+        options.url = 'http://localhost:7071/api/Grammar/Edit';
+        options.data = data;
+        options.method = 'POST';
+        $.ajax(options);
     }
+
+    function query() {
+        var query = $('.js-query').val();
+        query = encodeURI(query);
+
+        var options = getOptions();
+        options.url = 'http://localhost:7071/api/Grammar/Resolve/' + query;
+        options.method = 'GET';
+        $.ajax(options);
+    }
+
 </script>
 <script src="jquery-2.2.4.min.js"></script>
 </body>

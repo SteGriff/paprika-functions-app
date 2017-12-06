@@ -15,7 +15,7 @@ Uploads a grammar (request body), replacing <username>.txt in the blob storage. 
 
 Downloads the grammar of the currently authenticated user.
 
-## GET `/Grammar/Resolve?q=`
+## GET `/Grammar/Resolve/{query}`
 
 Resolves the grammar passed as `q`
 

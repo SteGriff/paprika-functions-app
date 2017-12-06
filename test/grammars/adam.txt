@@ -1,0 +1,9 @@
+# animal
+horse
+cow
+sheep
+
+# adjective
+tasty
+fat
+fresh
