@@ -27,7 +27,7 @@ namespace PaprikaFunctionsApp
             }
 
             var cache = new GrammarCache();
-            var grammarObject = cache.ReadFromCache(authChecker.Username);
+            var grammarObject = cache.ReadFromCache(authChecker.Username).ToPaprikaDictionary();
 
             var engine = new Core();
             engine.LoadThisGrammar(grammarObject);

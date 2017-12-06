@@ -3,6 +3,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using Paprika.Net;
 using PaprikaFunctionsApp.Common;
+using PaprikaFunctionsApp.Common.Models;
 using System;
 using System.IO;
 using System.Linq;
@@ -73,7 +74,8 @@ namespace PaprikaFunctionsApp
             try
             {
                 var gramCache = new GrammarCache();
-                gramCache.WriteToCache(engine.Grammar, authChecker.Username, DateTime.Now);
+                var grammarModel = new GrammarModel(engine.Grammar);
+                gramCache.WriteToCache(grammarModel, authChecker.Username, DateTime.Now);
             }
             catch (Exception ex)
             {

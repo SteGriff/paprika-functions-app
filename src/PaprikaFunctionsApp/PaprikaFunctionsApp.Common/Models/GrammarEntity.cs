@@ -9,12 +9,12 @@ namespace PaprikaFunctionsApp.Common.Models
 {
     public class GrammarEntity : TableEntity
     {
-        public Dictionary<string, List<string>> GrammarObject { get; set; }
+        public GrammarModel GrammarObject { get; set; }
         public string GrammarJson { get; set; }
         public string Username { get; set; }
         public DateTime CreatedDate { get; set; }
 
-        public GrammarEntity(Dictionary<string, List<string>> grammar, string username, DateTime created)
+        public GrammarEntity(GrammarModel grammar, string username, DateTime created)
         {
             PartitionKey = username;
             RowKey = created.ToIso8601();

@@ -11,7 +11,7 @@ namespace PaprikaFunctionsApp.Common
 {
     public class GrammarCache
     {
-        public Status<object> WriteToCache(Dictionary<string, List<string>> grammar, string username, DateTime created)
+        public Status<object> WriteToCache(GrammarModel grammar, string username, DateTime created)
         {
             var table = TableUtilities.GetTable("grammar");
             var newGrammar = new GrammarEntity(grammar, username, created);
@@ -24,7 +24,7 @@ namespace PaprikaFunctionsApp.Common
             return new Status<object>(false);
         }
 
-        public Dictionary<string, List<string>> ReadFromCache(string username)
+        public GrammarModel ReadFromCache(string username)
         {
             var table = TableUtilities.GetTable("grammar");
             var query = new TableQuery<GrammarEntity>() { FilterString = TableQuery.GenerateFilterCondition("PartitionKey", "eq", username) };
@@ -32,7 +32,7 @@ namespace PaprikaFunctionsApp.Common
             var latestGrammar = results.Results.OrderByDescending(g => g.RowKey).FirstOrDefault();
             try
             {
-                var grammarObject = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(latestGrammar.GrammarJson);
+                var grammarObject = JsonConvert.DeserializeObject<GrammarModel>(latestGrammar.GrammarJson);
                 return grammarObject;
             }
             catch (Exception)
