@@ -12,6 +12,8 @@
 	<h1>File upload test</h1>
     <p>AJAX</p>
     <input type="file" class="js-file">
+    <input type="text" class="js-username" value="adam" />
+    <input type="password" class="js-password" value="adampassword" />
     <button onclick="submit()">Send</button>
 </main>
 <script>
@@ -38,10 +40,10 @@
             contentType: false,
             processData: false,
             method: 'POST',
-            complete: function (x,y,z) {
-                console.log(x);
-                console.log(y);
-                console.log(z);
+            complete: function (data) {
+                console.log(data);
+                var message = data.status + ' ' + data.statusText + ': ' + data.responseText;
+                alert(message);
             }
         });
     }

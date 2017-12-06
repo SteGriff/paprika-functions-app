@@ -15,14 +15,8 @@ namespace PaprikaFunctionsApp
     {
 
         [FunctionName("Edit")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", "options", Route = "Grammar/Edit")]HttpRequestMessage req, TraceWriter log)
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "Grammar/Edit")]HttpRequestMessage req, TraceWriter log)
         {
-            //Yes, we can
-            if (req.Method == HttpMethod.Options)
-            {
-                return req.CreateResponse(HttpStatusCode.OK);
-            }
-
             //Check authentication and kick user with 401 if there's a problem
             var authChecker = new Authenticator();
             var authenticationStatus = authChecker.IsAuthorised(req);
