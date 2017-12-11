@@ -1,9 +1,9 @@
-# animal
+* animal
 horse
 cow
 sheep
 
-# adjective
+* adjective
 tasty
 fat
 fresh

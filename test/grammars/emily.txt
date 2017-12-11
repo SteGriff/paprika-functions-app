@@ -1,9 +1,9 @@
-# animal
+* animal
 cat
 dog
 mouse
 
-# adjective
+* adjective
 cute
 fast
 fluffy

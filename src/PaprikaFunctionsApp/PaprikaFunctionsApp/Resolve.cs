@@ -26,25 +26,37 @@ namespace PaprikaFunctionsApp
                 return authenticationStatus.Attachment;
             }
 
+            // Get user's grammar (kick them if it doesn't exist)
             var cache = new GrammarCache();
-            var grammarObject = cache.ReadFromCache(authChecker.Username).ToPaprikaDictionary();
+            var grammarObject = cache.ReadFromCache(authChecker.Username);
+            if (grammarObject.GrammarDictionary == null)
+            {
+                return req.CreateResponse(HttpStatusCode.Conflict, "No grammar loaded for user");
+            }
 
-            var engine = new Core();
-            engine.LoadThisGrammar(grammarObject);
-
-            string answer = "";
+            //Try to load the grammar
+            Core engine;
             try
             {
-                answer = engine.Parse(query);
+                engine = new Core();
+                engine.LoadThisGrammar(grammarObject.GrammarDictionary);
+            }
+            catch (Exception ex)
+            {
+                return req.CreateResponse(HttpStatusCode.InternalServerError, "Failed to load grammar: " + ex.Message);
+            }
+
+            //Parse the req and return the answer or Paprika's error message otherwise
+            try
+            {
+                string answer = engine.Parse(query);
                 log.Info("Reponse=" + answer);
+                return req.CreateResponse(HttpStatusCode.OK, answer, "text/plain");
             }
             catch (PaprikaException ex)
             {
-                answer = ex.ToString();
+                return req.CreateResponse(HttpStatusCode.InternalServerError, "Paprika error: " + ex.Message);
             }
-
-            return req.CreateResponse(HttpStatusCode.OK, answer, "text/plain");
-
         }
     }
 }
