@@ -1,56 +1,47 @@
 ﻿<!DOCTYPE HTML>
 <html>
 <head>
-    <title>Paprika</title>
+    <title></title>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="tachyons.min.css" />
+    <style>
+        .label {
+            margin: 0 4px;
+            padding: 1px 4px;
+            border-radius: 2px;
+        }
+        .grey
+        {
+            background-color: #b0b0b0;
+        }
+        .success {
+            background-color: #45d043;
+        }
+        .fail {
+            background-color: #e14040;
+        }
+    </style>
 </head>
-<body class="w-100 sans-serif">
-    <header class="w-100 pa3 ph5-ns bg-white">
-        <div class="db dt-ns mw9 center w-100">
-            <div class="db dtc-ns v-mid tl w-50">
-                <a href="/" class="dib f5 f4-ns fw6 mt0 mb1 link black-70" title="Home">
-                    Paprika
-                </a>
-            </div>
-            <div class="db dtc-ns v-mid w-100 tl tr-ns mt2 mt0-ns">
-                <a title="Documentation" href="/docs/"
-                   class="f6 fw6 hover-blue link black-70 mr2 mr3-ns dib">
-                    Docs
-                </a>
-                <a title="Components" href="/components/"
-                   class="f6 fw6 hover-blue link black-70 mr2 mr3-ns dib">
-                    Components
-                </a>
+<body class="sans-serif">
+    <main class="ma2 ma4-l">
+        <h1>Paprika Functions App Test</h1>
 
-                <span 
-                   class="f6 black-70 mr1 dib">
-                    Login:
-                </span>
+        <p>Auth (all requests)</p>
+        <input type="text" class="js-username" value="adam" />
+        <input type="password" class="js-password" value="adampassword" />
 
-                <span>
-                    <input type="text" class="js-username" placeholder="username" />
-                    <input type="password" class="js-password" placeholder="password" />
-                </span>
-            </div>
-        </div>
-    </header>
+        <p>Upload grammar</p>
+        <input type="file" class="js-file">
+        <button type="button" onclick="upload()">Upload</button>
 
-    <main class="w-100 bt b--black-10 bg-white">
-        <div class="ph3 ph5-ns">
+        <p>Query</p>
+        <input type="text" class="js-query">
+        <button type="button" onclick="query()">Send</button>
 
-            <p>Upload grammar</p>
-            <input type="file" class="js-file">
-            <button type="button" onclick="upload()">Upload</button>
+        <p>Results <span class="js-loading label grey">loading...</span></p>
+        <ul class="js-results"></ul>
 
-            <p>Query</p>
-            <input type="text" class="js-query">
-            <button type="button" onclick="query()">Send</button>
-
-            <p>Results <span class="js-loading label grey">loading...</span></p>
-            <ul class="js-results"></ul>
-        </div>
     </main>
     <script src="jquery-2.2.4.min.js"></script>
     <script>
@@ -93,7 +84,7 @@
             });
 
             var options = getOptions();
-            options.url = 'http://localhost:7071/api/Grammar/Edit';
+            options.url = 'http://localhost:7071/api/Grammar/UploadFile';
             options.data = data;
             options.method = 'POST';
 
@@ -113,11 +104,13 @@
             $.ajax(options);
         }
 
-        function loading(isOn) {
+        function loading(isOn)
+        {
             if (isOn) {
                 $('.js-loading').show();
             }
-            else {
+            else
+            {
                 $('.js-loading').hide();
             }
         }

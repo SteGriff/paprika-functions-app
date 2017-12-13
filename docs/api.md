@@ -7,9 +7,13 @@ Users get one grammar file each. Pre-compilers can be used at the client side to
 Grammar file is stored in a blob using the user's username, i.e. <username>.txt.
 Blob therefore comprises flat list of the grammar files of all users.
 
-## POST `/Grammar/Edit` (body)
+## POST `/Grammar/UploadText` (body)
 
-Uploads a grammar (request body), replacing <username>.txt in the blob storage. The Function App authenticates to the blob using an SA Key.
+Uploads a grammar (request body), replacing `<username>.txt` in the blob storage.
+
+## POST `/Grammar/UploadFile` (body)
+
+Uploads a grammar as a `multipart/form-encoding` file attachment, replacing `<username>.txt` in the blob storage.
 
 ## GET `/Grammar/Download`
 

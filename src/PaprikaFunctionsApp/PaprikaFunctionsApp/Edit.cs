@@ -16,8 +16,8 @@ namespace PaprikaFunctionsApp
     public static class Edit
     {
 
-        [FunctionName("Edit")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "Grammar/Edit")]HttpRequestMessage req, TraceWriter log)
+        [FunctionName("UploadFile")]
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "Grammar/UploadFile")]HttpRequestMessage req, TraceWriter log)
         {
             //Check authentication and kick user with 401 if there's a problem
             var authChecker = new Authenticator();
@@ -59,29 +59,12 @@ namespace PaprikaFunctionsApp
                 return req.CreateResponse(HttpStatusCode.InternalServerError, "Failed to write grammar");
             }
 
-            Core engine;
-            try
+            var parseAndCacheStatus = ParseAndCache(fileContent, authChecker.Username, req);
+            if (!parseAndCacheStatus.Success)
             {
-                var grammarLines = fileContent.Split(new char[] { '\n' });
-                engine = new Core();
-                engine.LoadGrammarFromString(grammarLines);
-            }
-            catch (Exception ex)
-            {
-                return req.CreateResponse(HttpStatusCode.InternalServerError, "Failed to parse grammar: " + ex.Message);
+                return parseAndCacheStatus.Attachment;
             }
 
-            try
-            {
-                var gramCache = new GrammarCache();
-                var grammarModel = new GrammarModel(engine.Grammar);
-                gramCache.WriteToCache(grammarModel, authChecker.Username, DateTime.Now);
-            }
-            catch (Exception ex)
-            {
-                return req.CreateResponse(HttpStatusCode.InternalServerError, "Failed to cache grammar: " + ex.Message);
-            }
- 
             return req.CreateResponse(HttpStatusCode.Created, "Saved");
         }
 
@@ -94,15 +77,33 @@ namespace PaprikaFunctionsApp
             blob.UploadFromStream(memStream);
         }
 
-        public static string ReadGrammar(string username)
+        public static Status<HttpResponseMessage> ParseAndCache(string fileContent, string username, [HttpTrigger]HttpRequestMessage req)
         {
-            var blob = BlobUtilities.GetBlockBlob(username);
+            Core engine;
+            try
+            {
+                var grammarLines = fileContent.Split(new char[] { '\n' });
+                engine = new Core();
+                engine.LoadGrammarFromString(grammarLines);
+            }
+            catch (Exception ex)
+            {
+                return new Status<HttpResponseMessage>(req.CreateResponse(HttpStatusCode.InternalServerError, "Failed to parse grammar: " + ex.Message), false);
+            }
 
-            var blobStream = blob.OpenRead();
-            var tr = new StreamReader(blobStream);
-            string grammarContent = tr.ReadToEnd();
-            return grammarContent;
+            try
+            {
+                var gramCache = new GrammarCache();
+                var grammarModel = new GrammarModel(engine.Grammar);
+                gramCache.WriteToCache(grammarModel, username, DateTime.Now);
+            }
+            catch (Exception ex)
+            {
+                return new Status<HttpResponseMessage>(req.CreateResponse(HttpStatusCode.InternalServerError, "Failed to cache grammar: " + ex.Message), false);
+            }
+
+            return new Status<HttpResponseMessage>(true);
         }
-        
+
     }
 }
