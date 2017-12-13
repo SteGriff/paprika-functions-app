@@ -19,8 +19,8 @@ namespace PaprikaFunctionsApp
             log.Info(string.Format("Incoming Resolve, q='{0}'", query));
 
             //Check authentication and kick user with 401 if there's a problem
-            var authChecker = new Authenticator();
-            var authenticationStatus = authChecker.IsAuthorised(req);
+            var authChecker = new AuthenticationResponse();
+            var authenticationStatus = authChecker.Get(req);
             if (!authenticationStatus.Success)
             {
                 return authenticationStatus.Attachment;

@@ -11,14 +11,16 @@
             padding: 1px 4px;
             border-radius: 2px;
         }
-        .grey
-        {
+
+        .grey {
             background-color: #b0b0b0;
         }
+
         .success {
             background-color: #45d043;
         }
-        .fail {
+
+        .error {
             background-color: #e14040;
         }
     </style>
@@ -31,9 +33,13 @@
         <input type="text" class="js-username" value="adam" />
         <input type="password" class="js-password" value="adampassword" />
 
-        <p>Upload grammar</p>
+        <p>Upload grammar file</p>
         <input type="file" class="js-file">
-        <button type="button" onclick="upload()">Upload</button>
+        <button type="button" onclick="uploadFile()">Upload</button>
+
+        <p>Upload grammar text</p>
+        <textarea class="js-grammar-text"></textarea>
+        <button type="button" onclick="uploadText()">Upload</button>
 
         <p>Query</p>
         <input type="text" class="js-query">
@@ -60,13 +66,14 @@
                 contentType: false,
                 processData: false,
                 method: 'POST',
-                success: function onSuccess(data) {
-                    $('.js-results').append(newLine(true, data.statusText, data.responseText));
+                success: function onSuccess(response, statusWord, xhr) {
+                    $('.js-results').append(newLine(true, xhr.statusText, xhr.responseText));
                 },
-                fail: function onSuccess(data) {
-                    $('.js-results').append(newLine(false, data.statusText, data.responseText));
+                error: function onError(xhr, statusWord, response) {
+                    $('.js-results').append(newLine(false, xhr.statusText, xhr.responseText));
                 },
                 complete: function onResponse(data) {
+                    console.log("onReponse", data)
                     loading(false);
                 }
             }
@@ -77,7 +84,7 @@
             return "<li><span class='label " + cssClass + "'>" + status + "</span><code>" + response + "</code></li>"
         }
 
-        function upload() {
+        function uploadFile() {
             var data = new FormData();
             $.each($('.js-file')[0].files, function (i, file) {
                 data.append('file-' + i, file);
@@ -87,6 +94,19 @@
             options.url = 'http://localhost:7071/api/Grammar/UploadFile';
             options.data = data;
             options.method = 'POST';
+
+            loading(true);
+            $.ajax(options);
+        }
+
+        function uploadText() {
+            var options = getOptions();
+            options.url = 'http://localhost:7071/api/Grammar/UploadText';
+            var text = $('.js-grammar-text').val();
+            options.data = { "text" : text };
+            options.method = 'POST';
+            options.contentType = "application/json";
+            options.processData = true;
 
             loading(true);
             $.ajax(options);

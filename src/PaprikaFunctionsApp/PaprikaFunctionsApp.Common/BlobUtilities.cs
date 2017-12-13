@@ -1,5 +1,6 @@
-﻿using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
+﻿using Microsoft.WindowsAzure.Storage.Blob;
+using System.IO;
+using System.Text;
 
 namespace PaprikaFunctionsApp.Common
 {

@@ -11,11 +11,11 @@ using System.Threading.Tasks;
 
 namespace PaprikaFunctionsApp
 {
-    public class Authenticator
+    public class AuthenticationResponse
     {
         public string Username { get; set; }
 
-        public Status<HttpResponseMessage> IsAuthorised([HttpTrigger]HttpRequestMessage req)
+        public Status<HttpResponseMessage> Get([HttpTrigger]HttpRequestMessage req)
         {
             Username = "";
             if (req.Headers.Contains("username"))
