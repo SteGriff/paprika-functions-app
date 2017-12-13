@@ -1,79 +1,121 @@
 ﻿<!DOCTYPE HTML>
 <html>
 <head>
-<title></title>
-<meta http-equiv="content-type" content="text/html; charset=utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-</style>
+    <title></title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="tachyons.min.css" />
+    <style>
+        .label {
+            margin: 0 4px;
+            padding: 1px 4px;
+            border-radius: 2px;
+        }
+        .grey
+        {
+            background-color: #b0b0b0;
+        }
+        .success {
+            background-color: #45d043;
+        }
+        .fail {
+            background-color: #e14040;
+        }
+    </style>
 </head>
-<body>
-<main>
-	<h1>Paprika Functions App Test</h1>
+<body class="sans-serif">
+    <main class="ma2 ma4-l">
+        <h1>Paprika Functions App Test</h1>
 
-    <p>Auth (all requests)</p>
-    <input type="text" class="js-username" value="adam" />
-    <input type="password" class="js-password" value="adampassword" />
+        <p>Auth (all requests)</p>
+        <input type="text" class="js-username" value="adam" />
+        <input type="password" class="js-password" value="adampassword" />
 
-    <p>Upload grammar</p>
-    <input type="file" class="js-file">
-    <button type="button" onclick="upload()">Upload</button>
+        <p>Upload grammar</p>
+        <input type="file" class="js-file">
+        <button type="button" onclick="upload()">Upload</button>
 
-    <p>Query</p>
-    <input type="text" class="js-query">
-    <button type="button" onclick="query()">Send</button>
+        <p>Query</p>
+        <input type="text" class="js-query">
+        <button type="button" onclick="query()">Send</button>
 
-</main>
-<script>
-    function getOptions()
-    {
-        var headers = {
-            'username': $('.js-username').val(),
-            'password': $('.js-password').val()
-        };
+        <p>Results <span class="js-loading label grey">loading...</span></p>
+        <ul class="js-results"></ul>
 
-        return {
-            beforeSend: function (request) {
-                request.setRequestHeader("username", headers.username);
-                request.setRequestHeader("password", headers.password);
-            },
-            cache: false,
-            contentType: false,
-            processData: false,
-            method: 'POST',
-            complete: function onResponse(data) {
-                console.log(data);
-                var message = data.status + ' ' + data.statusText + ': ' + data.responseText;
-                alert(message);
+    </main>
+    <script src="jquery-2.2.4.min.js"></script>
+    <script>
+        function getOptions() {
+            var headers = {
+                'username': $('.js-username').val(),
+                'password': $('.js-password').val()
+            };
+
+            return {
+                beforeSend: function (request) {
+                    request.setRequestHeader("username", headers.username);
+                    request.setRequestHeader("password", headers.password);
+                },
+                cache: false,
+                contentType: false,
+                processData: false,
+                method: 'POST',
+                success: function onSuccess(data) {
+                    $('.js-results').append(newLine(true, data.statusText, data.responseText));
+                },
+                fail: function onSuccess(data) {
+                    $('.js-results').append(newLine(false, data.statusText, data.responseText));
+                },
+                complete: function onResponse(data) {
+                    loading(false);
+                }
             }
         }
-    }
 
-    function upload()
-    {
-        var data = new FormData();
-        $.each($('.js-file')[0].files, function (i, file) {
-            data.append('file-' + i, file);
-        });
+        function newLine(success, status, response) {
+            var cssClass = success ? "success" : "error"
+            return "<li><span class='label " + cssClass + "'>" + status + "</span><code>" + response + "</code></li>"
+        }
 
-        var options = getOptions();
-        options.url = 'http://localhost:7071/api/Grammar/Edit';
-        options.data = data;
-        options.method = 'POST';
-        $.ajax(options);
-    }
+        function upload() {
+            var data = new FormData();
+            $.each($('.js-file')[0].files, function (i, file) {
+                data.append('file-' + i, file);
+            });
 
-    function query() {
-        var query = $('.js-query').val();
-        query = encodeURI(query);
+            var options = getOptions();
+            options.url = 'http://localhost:7071/api/Grammar/Edit';
+            options.data = data;
+            options.method = 'POST';
 
-        var options = getOptions();
-        options.url = 'http://localhost:7071/api/Grammar/Resolve/' + query;
-        options.method = 'GET';
-        $.ajax(options);
-    }
+            loading(true);
+            $.ajax(options);
+        }
 
-</script>
-<script src="jquery-2.2.4.min.js"></script>
+        function query() {
+            var query = $('.js-query').val();
+            query = encodeURI(query);
+
+            var options = getOptions();
+            options.url = 'http://localhost:7071/api/Grammar/Resolve/' + query;
+            options.method = 'GET';
+
+            loading(true);
+            $.ajax(options);
+        }
+
+        function loading(isOn)
+        {
+            if (isOn) {
+                $('.js-loading').show();
+            }
+            else
+            {
+                $('.js-loading').hide();
+            }
+        }
+
+        $(function () { loading(false); });
+    </script>
 </body>
 </html>

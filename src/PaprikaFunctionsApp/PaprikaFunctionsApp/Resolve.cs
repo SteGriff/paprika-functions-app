@@ -55,7 +55,7 @@ namespace PaprikaFunctionsApp
             }
             catch (PaprikaException ex)
             {
-                return req.CreateResponse(HttpStatusCode.InternalServerError, "Paprika error: " + ex.Message);
+                return req.CreateResponse(HttpStatusCode.BadRequest, "Paprika error: " + ex.Message);
             }
         }
     }
