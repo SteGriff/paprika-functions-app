@@ -45,6 +45,13 @@ namespace PaprikaFunctionsApp
                 return req.CreateResponse(HttpStatusCode.InternalServerError, "Unable to read file stream");
             }
 
+            var parseAndCacheResponse = new ParseAndCacheResponse();
+            var parseAndCacheStatus = parseAndCacheResponse.Get(fileContent, authResponse.Username, req);
+            if (!parseAndCacheStatus.Success)
+            {
+                return parseAndCacheStatus.Attachment;
+            }
+
             try
             {
                 GrammarBlob.WriteGrammar(authResponse.Username, fileContent);
@@ -52,13 +59,6 @@ namespace PaprikaFunctionsApp
             catch (Exception)
             {
                 return req.CreateResponse(HttpStatusCode.InternalServerError, "Failed to write grammar");
-            }
-
-            var parseAndCacheResponse = new ParseAndCacheResponse();
-            var parseAndCacheStatus = parseAndCacheResponse.Get(fileContent, authResponse.Username, req);
-            if (!parseAndCacheStatus.Success)
-            {
-                return parseAndCacheStatus.Attachment;
             }
 
             return req.CreateResponse(HttpStatusCode.Created, "Saved");

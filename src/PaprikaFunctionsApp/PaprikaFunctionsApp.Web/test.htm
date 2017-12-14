@@ -103,10 +103,8 @@
             var options = getOptions();
             options.url = 'http://localhost:7071/api/Grammar/UploadText';
             var text = $('.js-grammar-text').val();
-            options.data = { "text" : text };
+            options.data = text;
             options.method = 'POST';
-            options.contentType = "application/json";
-            options.processData = true;
 
             loading(true);
             $.ajax(options);

@@ -1,10 +1,11 @@
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using System;
+using PaprikaFunctionsApp.Common;
 
 namespace PaprikaFunctionsApp
 {
@@ -13,15 +14,44 @@ namespace PaprikaFunctionsApp
         [FunctionName("UploadText")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = "Grammar/UploadText")]HttpRequestMessage req, TraceWriter log)
         {
-            // Get request body
-            dynamic data = await req.Content.ReadAsAsync<object>();
+            //Check authentication and kick user with 401 if there's a problem
+            var authResponse = new AuthenticationResponse();
+            var authenticationStatus = authResponse.Get(req);
+            if (!authenticationStatus.Success)
+            {
+                return authenticationStatus.Attachment;
+            }
 
-            // Set name to query string or body data
-            string text = data?.text;
+            //Authenticated user:-
+            //Get the uploaded content
+            string fileContent;
+            try
+            {
+                // Get POST body
+                fileContent = await req.Content.ReadAsStringAsync();
+            }
+            catch (Exception)
+            {
+                return req.CreateResponse(HttpStatusCode.InternalServerError, "Unable to read file stream");
+            }
 
-            return text == null
-                ? req.CreateResponse(HttpStatusCode.BadRequest, "No text")
-                : req.CreateResponse(HttpStatusCode.OK, "Got '" + text + "'");
+            var parseAndCacheResponse = new ParseAndCacheResponse();
+            var parseAndCacheStatus = parseAndCacheResponse.Get(fileContent, authResponse.Username, req);
+            if (!parseAndCacheStatus.Success)
+            {
+                return parseAndCacheStatus.Attachment;
+            }
+
+            try
+            {
+                GrammarBlob.WriteGrammar(authResponse.Username, fileContent);
+            }
+            catch (Exception)
+            {
+                return req.CreateResponse(HttpStatusCode.InternalServerError, "Failed to write grammar");
+            }
+
+            return req.CreateResponse(HttpStatusCode.Created, "Saved");
         }
     }
 }
