@@ -6,20 +6,27 @@ using System.Threading.Tasks;
 
 namespace PaprikaFunctionsApp.Common
 {
-    public static class TableUtilities
+    public class TableUtilities
     {
-        public static CloudTable GetTable(string tablename)
+        private AzureStorageProvider _storageProvider;
+
+        public TableUtilities(AzureStorageProvider storageProvider)
         {
-            CloudTableClient tableClient = AzureStorageProvider.StorageAccount.CreateCloudTableClient();
+            _storageProvider = storageProvider;
+        }
+
+        public CloudTable GetTable(string tablename)
+        {
+            CloudTableClient tableClient = _storageProvider.StorageAccount.CreateCloudTableClient();
             CloudTable table = tableClient.GetTableReference(tablename);
             table.CreateIfNotExistsAsync();
             
             return table;
         }
 
-        public static async Task DropTableAsync(string tablename)
+        public async Task DropTableAsync(string tablename)
         {
-            CloudTableClient tableClient = AzureStorageProvider.StorageAccount.CreateCloudTableClient();
+            CloudTableClient tableClient = _storageProvider.StorageAccount.CreateCloudTableClient();
             CloudTable table = tableClient.GetTableReference(tablename);
             await table.DeleteIfExistsAsync();
         }

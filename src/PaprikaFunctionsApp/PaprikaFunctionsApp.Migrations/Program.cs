@@ -1,21 +1,42 @@
-﻿using Microsoft.WindowsAzure.Storage.Table;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.WindowsAzure.Storage.Table;
 using PaprikaFunctionsApp.Common;
 using PaprikaFunctionsApp.Common.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace PaprikaFunctionsApp.Migrations
 {
     class Program
     {
+        public static IConfigurationRoot Configuration;
+        private static AzureStorageProvider _storageProvider;
+
         static void Main(string[] args)
         {
-            var usersTable = TableUtilities.GetTable("users");
+            _storageProvider = new AzureStorageProvider(GetConnectionString());
+            var tableAccess = new TableUtilities(_storageProvider);
+            var usersTable = tableAccess.GetTable("users");
 
-            TableUtilities.DropTableAsync("users").Wait();
+            tableAccess.DropTableAsync("users").Wait();
             MakeAndCheckUsers(usersTable);
+        }
 
+        private static void SetupConfiguration()
+        {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json");
+
+            Configuration = builder.Build();
+        }
+
+        private static string GetConnectionString()
+        {
+            string conString = Configuration.GetConnectionString("PrimaryStorage");
+            return conString;
         }
 
         private static void MakeAndCheckUsers(CloudTable usersTable)

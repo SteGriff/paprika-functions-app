@@ -11,9 +11,18 @@ namespace PaprikaFunctionsApp.Common
 {
     public class GrammarCache
     {
+        private AzureStorageProvider _storageProvider;
+        private TableUtilities _tableAccess;
+
+        public GrammarCache(AzureStorageProvider storageProvider)
+        {
+            _storageProvider = storageProvider;
+            _tableAccess = new TableUtilities(_storageProvider);
+        }
+
         public Status<object> WriteToCache(GrammarModel grammar, string username, DateTime created)
         {
-            var table = TableUtilities.GetTable("grammar");
+            var table = _tableAccess.GetTable("grammar");
             var newGrammar = new GrammarEntity(grammar, username, created);
             var insert = TableOperation.Insert(newGrammar);
             var result = table.ExecuteAsync(insert).Result;
@@ -26,7 +35,7 @@ namespace PaprikaFunctionsApp.Common
 
         public GrammarModel ReadFromCache(string username)
         {
-            var table = TableUtilities.GetTable("grammar");
+            var table = _tableAccess.GetTable("grammar");
             var query = new TableQuery<GrammarEntity>() { FilterString = TableQuery.GenerateFilterCondition("PartitionKey", "eq", username) };
             var results = table.ExecuteQuerySegmentedAsync(query, new TableContinuationToken()).Result;
             var latestGrammar = results.Results.OrderByDescending(g => g.RowKey).FirstOrDefault();

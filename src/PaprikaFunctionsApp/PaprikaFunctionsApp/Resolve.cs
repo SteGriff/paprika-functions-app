@@ -13,6 +13,8 @@ namespace PaprikaFunctionsApp
 {
     public static class Resolve
     {
+        private static AzureStorageProvider _storageProvider;
+
         [FunctionName("Resolve")]
         public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "Grammar/Resolve/{query}")]HttpRequestMessage req, string query, TraceWriter log)
         {
@@ -20,14 +22,23 @@ namespace PaprikaFunctionsApp
 
             //Check authentication and kick user with 401 if there's a problem
             var authChecker = new AuthenticationResponse();
-            var authenticationStatus = authChecker.Get(req);
+            var authenticationStatus = authChecker.Get(_storageProvider, req);
             if (!authenticationStatus.Success)
             {
                 return authenticationStatus.Attachment;
             }
 
+            try
+            {
+                _storageProvider = StorageProvider.GetStorageProvider();
+            }
+            catch (Exception)
+            {
+                return req.CreateResponse(HttpStatusCode.InternalServerError, "Storage Connection Error");
+            }
+
             // Get user's grammar (kick them if it doesn't exist)
-            var cache = new GrammarCache();
+            var cache = new GrammarCache(_storageProvider);
             var grammarObject = cache.ReadFromCache(authChecker.Username);
             if (grammarObject.GrammarDictionary == null)
             {

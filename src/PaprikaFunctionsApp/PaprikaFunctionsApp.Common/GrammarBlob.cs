@@ -5,11 +5,19 @@ using System.Text;
 
 namespace PaprikaFunctionsApp.Common
 {
-    public static class GrammarBlob
+    public class GrammarBlob
     {
-        public static void WriteGrammar(string username, string grammar)
+        private AzureStorageProvider _storageProvider;
+
+        public GrammarBlob(AzureStorageProvider storageProvider)
         {
-            var blob = BlobUtilities.GetBlockBlob(username);
+            _storageProvider = storageProvider;
+        }
+
+        public void WriteGrammar(string username, string grammar)
+        {
+            var blobAccess = new BlobUtilities(_storageProvider);
+            var blob = blobAccess.GetBlockBlob(username);
 
             var grammarBytes = Encoding.UTF8.GetBytes(grammar);
             var memStream = new MemoryStream(grammarBytes);

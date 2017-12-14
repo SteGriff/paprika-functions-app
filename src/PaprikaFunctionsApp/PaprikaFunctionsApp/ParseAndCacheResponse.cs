@@ -10,7 +10,7 @@ namespace PaprikaFunctionsApp
 {
     public class ParseAndCacheResponse
     {
-        public Status<HttpResponseMessage> Get(string fileContent, string username, [HttpTrigger]HttpRequestMessage req)
+        public Status<HttpResponseMessage> Get(string fileContent, string username, AzureStorageProvider storageProvider, [HttpTrigger]HttpRequestMessage req)
         {
             Core engine;
             try
@@ -26,7 +26,7 @@ namespace PaprikaFunctionsApp
 
             try
             {
-                var gramCache = new GrammarCache();
+                var gramCache = new GrammarCache(storageProvider);
                 var grammarModel = new GrammarModel(engine.Grammar);
                 gramCache.WriteToCache(grammarModel, username, DateTime.Now);
             }

@@ -1,19 +1,21 @@
 ﻿using Microsoft.WindowsAzure.Storage;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace PaprikaFunctionsApp.Common
 {
-    static class AzureStorageProvider
+    public class AzureStorageProvider
     {
-        static string connectionString = "UseDevelopmentStorage=true";
+        public string _connectionString;
 
-        public static CloudStorageAccount StorageAccount
+        public AzureStorageProvider(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
+
+        public CloudStorageAccount StorageAccount
         {
             get
             {
-                return CloudStorageAccount.Parse(connectionString);
+                return CloudStorageAccount.Parse(_connectionString);
             }
         }
     }

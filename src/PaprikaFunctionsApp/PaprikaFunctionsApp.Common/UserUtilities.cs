@@ -8,16 +8,24 @@ using System.Threading.Tasks;
 
 namespace PaprikaFunctionsApp.Common
 {
-    public static class UserUtilities
+    public class UserUtilities
     {
-        public static string GetFilenameForUser(string username)
+        private AzureStorageProvider _storageProvider;
+
+        public UserUtilities(AzureStorageProvider storageProvider)
+        {
+            _storageProvider = storageProvider;
+        }
+
+        public string GetFilenameForUser(string username)
         {
             return username + ".txt";
         }
 
-        public static UserEntity GetUser(string username)
+        public UserEntity GetUser(string username)
         {
-            var userTable = TableUtilities.GetTable("users");
+            var tableAccess = new TableUtilities(_storageProvider);
+            var userTable = tableAccess.GetTable("users");
             var query = new TableQuery<UserEntity>() { FilterString = TableQuery.GenerateFilterCondition("PartitionKey", "eq", username) };
             var results = userTable.ExecuteQuerySegmentedAsync(query, new TableContinuationToken()).Result;
             var user = results.FirstOrDefault();

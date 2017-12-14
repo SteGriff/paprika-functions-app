@@ -15,7 +15,7 @@ namespace PaprikaFunctionsApp
     {
         public string Username { get; set; }
 
-        public Status<HttpResponseMessage> Get([HttpTrigger]HttpRequestMessage req)
+        public Status<HttpResponseMessage> Get(AzureStorageProvider storageProvider, [HttpTrigger]HttpRequestMessage req)
         {
             Username = "";
             if (req.Headers.Contains("username"))
@@ -38,7 +38,8 @@ namespace PaprikaFunctionsApp
             }
 
             //Get the user and check their auth
-            var user = UserUtilities.GetUser(Username);
+            var userUtils = new UserUtilities(storageProvider);
+            var user = userUtils.GetUser(Username);
             bool isAuthed = false;
             if (user != null)
             {
