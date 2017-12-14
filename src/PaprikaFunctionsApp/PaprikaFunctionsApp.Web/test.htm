@@ -35,105 +35,28 @@
 
         <p>Upload grammar file</p>
         <input type="file" class="js-file">
-        <button type="button" onclick="uploadFile()">Upload</button>
+        <button type="button" onclick="root.uploadFile()">Upload</button>
 
         <p>Upload grammar text</p>
         <textarea class="js-grammar-text"></textarea>
-        <button type="button" onclick="uploadText()">Upload</button>
+        <button type="button" onclick="root.uploadText()">Upload</button>
 
         <p>Query</p>
         <input type="text" class="js-query">
-        <button type="button" onclick="query()">Send</button>
+        <button type="button" onclick="root.query()">Send</button>
 
         <p>Results <span class="js-loading label grey">loading...</span></p>
         <ul class="js-results"></ul>
 
     </main>
     <script src="jquery-2.2.4.min.js"></script>
+    <script src="Paprika.js"></script>
     <script>
-        function getOptions() {
-            var headers = {
-                'username': $('.js-username').val(),
-                'password': $('.js-password').val()
-            };
-
-            return {
-                beforeSend: function (request) {
-                    request.setRequestHeader("username", headers.username);
-                    request.setRequestHeader("password", headers.password);
-                },
-                cache: false,
-                contentType: false,
-                processData: false,
-                method: 'POST',
-                success: function onSuccess(response, statusWord, xhr) {
-                    $('.js-results').append(newLine(true, xhr.statusText, xhr.responseText));
-                },
-                error: function onError(xhr, statusWord, response) {
-                    $('.js-results').append(newLine(false, xhr.statusText, xhr.responseText));
-                },
-                complete: function onResponse(data) {
-                    console.log("onReponse", data)
-                    loading(false);
-                }
-            }
-        }
-
-        function newLine(success, status, response) {
-            var cssClass = success ? "success" : "error"
-            return "<li><span class='label " + cssClass + "'>" + status + "</span><code>" + response + "</code></li>"
-        }
-
-        function uploadFile() {
-            var data = new FormData();
-            $.each($('.js-file')[0].files, function (i, file) {
-                data.append('file-' + i, file);
-            });
-
-            var options = getOptions();
-            options.url = 'http://localhost:7071/api/Grammar/UploadFile';
-            options.data = data;
-            options.method = 'POST';
-
-            loading(true);
-            $.ajax(options);
-        }
-
-        function uploadText() {
-            var options = getOptions();
-            options.url = 'http://localhost:7071/api/Grammar/UploadText';
-            var text = $('.js-grammar-text').val();
-            options.data = text;
-            options.method = 'POST';
-
-            loading(true);
-            $.ajax(options);
-        }
-
-        function query() {
-            var query = $('.js-query').val();
-            query = encodeURI(query);
-
-            var options = getOptions();
-            options.url = 'http://localhost:7071/api/Grammar/Resolve/' + query;
-            options.method = 'GET';
-
-            loading(true);
-            $.ajax(options);
-        }
-
-        function loading(isOn)
-        {
-            if (isOn) {
-                $('.js-loading').show();
-            }
-            else
-            {
-                $('.js-loading').hide();
-            }
-        }
-
-        $(function () { loading(false); });
+        var root;
+        $(function () {
+            root = new Paprika();
+            root.loading(false);
+        });
     </script>
 </body>
 </html>
