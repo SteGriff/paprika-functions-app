@@ -16,14 +16,6 @@ namespace PaprikaFunctionsApp
         [FunctionName("UploadFile")]
         public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = "Grammar/UploadFile")]HttpRequestMessage req, TraceWriter log)
         {
-            //Check authentication and kick user with 401 if there's a problem
-            var authResponse = new AuthenticationResponse();
-            var authenticationStatus = authResponse.Get(_storageProvider, req);
-            if (!authenticationStatus.Success)
-            {
-                return authenticationStatus.Attachment;
-            }
-
             try
             {
                 _storageProvider = StorageProvider.GetStorageProvider();
@@ -31,6 +23,14 @@ namespace PaprikaFunctionsApp
             catch (Exception)
             {
                 return req.CreateResponse(HttpStatusCode.InternalServerError, "Storage Connection Error");
+            }
+
+            //Check authentication and kick user with 401 if there's a problem
+            var authResponse = new AuthenticationResponse();
+            var authenticationStatus = authResponse.Get(_storageProvider, req);
+            if (!authenticationStatus.Success)
+            {
+                return authenticationStatus.Attachment;
             }
 
             //Authenticated user:-

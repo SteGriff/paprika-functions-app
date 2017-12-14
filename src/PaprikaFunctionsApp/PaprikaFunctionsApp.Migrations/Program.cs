@@ -21,6 +21,9 @@ namespace PaprikaFunctionsApp.Migrations
             var usersTable = tableAccess.GetTable("users");
 
             tableAccess.DropTableAsync("users").Wait();
+
+            //Table has been dropped; recreate it
+            usersTable = tableAccess.GetTable("users");
             MakeAndCheckUsers(usersTable);
         }
 
@@ -35,6 +38,10 @@ namespace PaprikaFunctionsApp.Migrations
 
         private static string GetConnectionString()
         {
+            if (Configuration == null)
+            {
+                SetupConfiguration();
+            }
             string conString = Configuration.GetConnectionString("PrimaryStorage");
             return conString;
         }

@@ -20,14 +20,6 @@ namespace PaprikaFunctionsApp
         {
             log.Info(string.Format("Incoming Resolve, q='{0}'", query));
 
-            //Check authentication and kick user with 401 if there's a problem
-            var authChecker = new AuthenticationResponse();
-            var authenticationStatus = authChecker.Get(_storageProvider, req);
-            if (!authenticationStatus.Success)
-            {
-                return authenticationStatus.Attachment;
-            }
-
             try
             {
                 _storageProvider = StorageProvider.GetStorageProvider();
@@ -37,6 +29,14 @@ namespace PaprikaFunctionsApp
                 return req.CreateResponse(HttpStatusCode.InternalServerError, "Storage Connection Error");
             }
 
+            //Check authentication and kick user with 401 if there's a problem
+            var authChecker = new AuthenticationResponse();
+            var authenticationStatus = authChecker.Get(_storageProvider, req);
+            if (!authenticationStatus.Success)
+            {
+                return authenticationStatus.Attachment;
+            }
+            
             // Get user's grammar (kick them if it doesn't exist)
             var cache = new GrammarCache(_storageProvider);
             var grammarObject = cache.ReadFromCache(authChecker.Username);
