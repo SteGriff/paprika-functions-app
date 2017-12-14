@@ -38,91 +38,49 @@
     </header>
 
     <main class="w-100 bt b--black-10 bg-white">
-        <div class="ph3 ph5-ns">
+        <div class="ph1 ph3-ns">
 
-            <p>Upload grammar</p>
-            <input type="file" class="js-file">
-            <button type="button" onclick="upload()">Upload</button>
+            <div class="w-100 w-50-ns fl-ns">
+                <p class="f6 ttu">Your Grammar:</p>
+                <textarea class="js-grammar-text
+                          w-100 h5 pa2
+                          b--black-80 black-80 bg-white bw1 ba"></textarea>
+                <div>
+                    <button type="button" onclick="root.uploadText()"
+                            class="mv1 pa1 ph3 w-100
+                            b--black-80 black-80 bg-white bw1 ba
+                            b grow pointer">Save changes</button>
+                </div>
+            </div>
 
-            <p>Query</p>
-            <input type="text" class="js-query">
-            <button type="button" onclick="query()">Send</button>
+            <div class="w-100 w-40-ns fr-ns b--black-10 bl-ns pl2-ns">
 
-            <p>Results <span class="js-loading label grey">loading...</span></p>
-            <ul class="js-results"></ul>
+                <!--<p>Upload grammar</p>
+                <input type="file" class="js-file">
+                <button type="button" onclick="upload()">Upload</button>-->
+
+                <p><label for="query" class="f6 ttu">Paprika Query:</label></p>
+                <input name="query" id="query" type="text" class="js-query
+                       w-100 pa2 
+                       b--black-80 black-80 bg-white bw1 ba">
+                <button type="button" onclick="query()"
+                        class="mv1 pa1 ph3 w-100
+                            b--black-80 black-80 bg-white bw1 ba
+                            b grow pointer">Send</button>
+
+                <p>Results <span class="js-loading label grey">loading...</span></p>
+                <ul class="js-results"></ul>
+            </div>
         </div>
     </main>
     <script src="jquery-2.2.4.min.js"></script>
+    <script src="Paprika.js"></script>
     <script>
-        function getOptions() {
-            var headers = {
-                'username': $('.js-username').val(),
-                'password': $('.js-password').val()
-            };
-
-            return {
-                beforeSend: function (request) {
-                    request.setRequestHeader("username", headers.username);
-                    request.setRequestHeader("password", headers.password);
-                },
-                cache: false,
-                contentType: false,
-                processData: false,
-                method: 'POST',
-                success: function onSuccess(data) {
-                    $('.js-results').append(newLine(true, data.statusText, data.responseText));
-                },
-                fail: function onSuccess(data) {
-                    $('.js-results').append(newLine(false, data.statusText, data.responseText));
-                },
-                complete: function onResponse(data) {
-                    loading(false);
-                }
-            }
-        }
-
-        function newLine(success, status, response) {
-            var cssClass = success ? "success" : "error"
-            return "<li><span class='label " + cssClass + "'>" + status + "</span><code>" + response + "</code></li>"
-        }
-
-        function upload() {
-            var data = new FormData();
-            $.each($('.js-file')[0].files, function (i, file) {
-                data.append('file-' + i, file);
-            });
-
-            var options = getOptions();
-            options.url = 'http://localhost:7071/api/Grammar/Edit';
-            options.data = data;
-            options.method = 'POST';
-
-            loading(true);
-            $.ajax(options);
-        }
-
-        function query() {
-            var query = $('.js-query').val();
-            query = encodeURI(query);
-
-            var options = getOptions();
-            options.url = 'http://localhost:7071/api/Grammar/Resolve/' + query;
-            options.method = 'GET';
-
-            loading(true);
-            $.ajax(options);
-        }
-
-        function loading(isOn) {
-            if (isOn) {
-                $('.js-loading').show();
-            }
-            else {
-                $('.js-loading').hide();
-            }
-        }
-
-        $(function () { loading(false); });
+        var root;
+        $(function () {
+            root = new Paprika();
+            root.loading(false);
+        });
     </script>
 </body>
 </html>
