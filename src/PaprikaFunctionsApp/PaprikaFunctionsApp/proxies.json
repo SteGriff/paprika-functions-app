@@ -7,11 +7,11 @@
       },
       "backendUri": "https://paprika-web.azurewebsites.net"
     },
-    "localchange": {
+    "paprikawebresources": {
       "matchCondition": {
-        "route": "/res"
+        "route": "/res/{*file}"
       },
-      "backendUri": "https://paprika-web.azurewebsites.net/res"
+      "backendUri": "https://paprika-web.azurewebsites.net/res/{file}"
     }
   }
 }

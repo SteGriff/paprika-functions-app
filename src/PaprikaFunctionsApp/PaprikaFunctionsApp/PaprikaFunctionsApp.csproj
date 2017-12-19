@@ -16,6 +16,9 @@
     <Reference Include="System.Configuration" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="proxies.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="host.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
