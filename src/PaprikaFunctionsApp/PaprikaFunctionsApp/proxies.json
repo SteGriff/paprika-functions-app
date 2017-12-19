@@ -1,0 +1,17 @@
+﻿{
+    "$schema": "http://json.schemastore.org/proxies",
+  "proxies": {
+    "paprikaweb": {
+      "matchCondition": {
+        "route": "/"
+      },
+      "backendUri": "https://paprika-web.azurewebsites.net"
+    },
+    "localchange": {
+      "matchCondition": {
+        "route": "/res"
+      },
+      "backendUri": "https://paprika-web.azurewebsites.net/res"
+    }
+  }
+}

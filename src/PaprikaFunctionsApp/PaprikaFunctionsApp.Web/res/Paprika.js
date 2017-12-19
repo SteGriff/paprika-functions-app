@@ -1,6 +1,7 @@
 ﻿function Paprika() {
-    this.uploadFileUrl = 'http://localhost:7071/api/Grammar/UploadFile';
-    this.uploadTextUrl = 'http://localhost:7071/api/Grammar/UploadText';
+    this.uploadFileUrl = '/api/Grammar/UploadFile/';
+    this.uploadTextUrl = '/api/Grammar/UploadText/';
+    this.queryUrl = '/api/Grammar/Resolve/';
     me = this;
 
     this.getInstructions = function () {
@@ -67,7 +68,7 @@
         query = encodeURI(query);
 
         var options = this.getOptions();
-        options.url = 'http://localhost:7071/api/Grammar/Resolve/' + query;
+        options.url = this.queryUrl + query;
         options.method = 'GET';
 
         this.loading(true);

@@ -4,7 +4,7 @@
     <title>Paprika</title>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="tachyons.min.css" />
+    <link rel="stylesheet" href="res/tachyons.min.css" />
 </head>
 <body class="w-100 sans-serif">
     <header class="w-100 pa3 ph5-ns bg-white">
@@ -63,7 +63,7 @@
                 <input name="query" id="query" type="text" class="js-query
                        w-100 pa2 
                        b--black-80 black-80 bg-white bw1 ba">
-                <button type="button" onclick="query()"
+                <button type="button" onclick="root.query()"
                         class="mv1 pa1 ph3 w-100
                             b--black-80 black-80 bg-white bw1 ba
                             b grow pointer">Send</button>
@@ -73,8 +73,8 @@
             </div>
         </div>
     </main>
-    <script src="jquery-2.2.4.min.js"></script>
-    <script src="Paprika.js"></script>
+    <script src="res/jquery-2.2.4.min.js"></script>
+    <script src="res/Paprika.js"></script>
     <script>
         var root;
         $(function () {
