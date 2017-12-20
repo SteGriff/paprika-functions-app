@@ -1,7 +1,18 @@
 ﻿function Paprika() {
-    this.uploadFileUrl = '/api/Grammar/UploadFile/';
-    this.uploadTextUrl = '/api/Grammar/UploadText/';
-    this.queryUrl = '/api/Grammar/Resolve/';
+    this.uploadFileEndpoint = {
+        url: '/api/Grammar/UploadFile/',
+        key: 'q7HVSreWULwdAbSFbuG517bakta77cyDG5ZGv5ZPyWdPTLVze3fHbA=='
+    };
+    this.resolveEndpoint = {
+        url: '/api/Grammar/Resolve/',
+        key: '84DlNVzNcAQf2s6P6PddI8lEcfRhPWZFhy3UPOz/4zWWgbnB3mqzMA=='
+    };
+    this.uploadTextEndpoint = {
+        url: '/api/Grammar/UploadText/',
+        key: 'aUJaV591ZybgjVBvX7X1a/0SUJPwdE6NpUKnjRAuzr4AS12mf8vUow=='
+    };
+
+    //I would do anything for scope
     me = this;
 
     this.getInstructions = function () {
@@ -9,7 +20,7 @@
         return instructions;
     }
 
-    this.getOptions = function () {
+    this.getOptions = function (endpoint) {
 
         newLine = function (success, status, response) {
             var cssClass = success ? "success" : "error"
@@ -20,7 +31,9 @@
             beforeSend: function (request) {
                 request.setRequestHeader('username', $('.js-username').val());
                 request.setRequestHeader('password', $('.js-password').val());
+                request.setRequestHeader('x-functions-key', endpoint.key);
             },
+            url = endpoint.url,
             cache: false,
             contentType: false,
             processData: false,
@@ -43,8 +56,7 @@
             data.append('file-' + i, file);
         });
 
-        var options = this.getOptions();
-        options.url = this.uploadFileUrl;
+        var options = this.getOptions(this.uploadFileEndpoint);
         options.data = data;
         options.method = 'POST';
 
@@ -53,8 +65,7 @@
     }
 
     this.uploadText = function () {
-        var options = this.getOptions();
-        options.url = this.uploadTextUrl;
+        var options = this.getOptions(this.uploadTextEndpoint);
         var text = $('.js-grammar-text').val();
         options.data = text;
         options.method = 'POST';
@@ -67,8 +78,8 @@
         var query = $('.js-query').val();
         query = encodeURI(query);
 
-        var options = this.getOptions();
-        options.url = this.queryUrl + query;
+        var options = this.getOptions(this.queryEndpoint);
+        options.url = this.query.url + query;
         options.method = 'GET';
 
         this.loading(true);

@@ -6,8 +6,11 @@ namespace PaprikaFunctionsApp.Common.Models
 {
     public class UserEntity : TableEntity
     {
-        public UserEntity(string username, string passwordEnc, DateTime registrationDate)
+        public UserEntity(string username, string passwordPlain)
         {
+            DateTime registrationDate = DateTime.Now;
+            string passwordEnc = Encryptor.Encrypt(passwordPlain, registrationDate.ToString("O"));
+
             this.PartitionKey = username;
             this.RowKey = registrationDate.ToIso8601();
             this.RegistrationDate = registrationDate;

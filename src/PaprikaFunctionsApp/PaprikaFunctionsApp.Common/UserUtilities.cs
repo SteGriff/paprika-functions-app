@@ -32,5 +32,23 @@ namespace PaprikaFunctionsApp.Common
             return user;
         }
 
+        public async Task<Status<string>> CreateUserAsync(string username, string password)
+        {
+            try
+            {
+                var tableAccess = new TableUtilities(_storageProvider);
+                var userTable = tableAccess.GetTable("users");
+
+                var newUserEntity = new UserEntity(username, password);
+
+                var insert = TableOperation.Insert(newUserEntity, true);
+                await userTable.ExecuteAsync(insert);
+            }
+            catch (Exception ex)
+            {
+                return new Status<string>(ex.Message, false);
+            }
+            return new Status<string>(true);
+        }
     }
 }

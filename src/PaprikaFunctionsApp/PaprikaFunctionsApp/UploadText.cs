@@ -20,9 +20,9 @@ namespace PaprikaFunctionsApp
             {
                 _storageProvider = StorageProvider.GetStorageProvider();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return req.CreateResponse(HttpStatusCode.InternalServerError, "Storage Connection Error");
+                return req.CreateResponse(HttpStatusCode.InternalServerError, "Storage Connection Error: " + ex.ToString());
             }
 
             //Check authentication and kick user with 401 if there's a problem

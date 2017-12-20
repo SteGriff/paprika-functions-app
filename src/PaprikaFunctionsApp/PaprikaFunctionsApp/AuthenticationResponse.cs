@@ -1,20 +1,18 @@
 ﻿using Microsoft.Azure.WebJobs;
 using PaprikaFunctionsApp.Common;
 using PaprikaFunctionsApp.Common.Models;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net.Http.Formatting;
+using System.Web.Http;
 
 namespace PaprikaFunctionsApp
 {
     public class AuthenticationResponse
     {
         public string Username { get; set; }
-
+        
         public Status<HttpResponseMessage> Get(AzureStorageProvider storageProvider, [HttpTrigger]HttpRequestMessage req)
         {
             Username = "";
@@ -24,7 +22,7 @@ namespace PaprikaFunctionsApp
             }
             else
             {
-                return new Status<HttpResponseMessage>(req.CreateResponse(HttpStatusCode.Unauthorized, "No username received"), false);
+                return new Status<HttpResponseMessage>(req.CreateResponse(HttpStatusCode.Forbidden, "No username received"), false);
             }
 
             string plainPasswordString;
@@ -34,7 +32,7 @@ namespace PaprikaFunctionsApp
             }
             else
             {
-                return new Status<HttpResponseMessage>(req.CreateResponse(HttpStatusCode.Unauthorized, "No password received"), false);
+                return new Status<HttpResponseMessage>(req.CreateResponse(HttpStatusCode.Forbidden, "No password received"), false);
             }
 
             //Get the user and check their auth
@@ -51,7 +49,7 @@ namespace PaprikaFunctionsApp
             // (this is an Infosec measure to avoid revealing existence of usernames)
             if (!isAuthed)
             {
-                return new Status<HttpResponseMessage>(req.CreateResponse(HttpStatusCode.Unauthorized, "Incorrect username/password combination"), false);
+                return new Status<HttpResponseMessage>(req.CreateResponse(HttpStatusCode.Forbidden, "Incorrect username/password combination"), false);
             }
 
             return new Status<HttpResponseMessage>(true);
