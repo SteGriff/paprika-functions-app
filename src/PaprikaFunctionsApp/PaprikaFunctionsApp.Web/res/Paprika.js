@@ -33,7 +33,7 @@
                 request.setRequestHeader('password', $('.js-password').val());
                 request.setRequestHeader('x-functions-key', endpoint.key);
             },
-            url = endpoint.url,
+            url: endpoint.url,
             cache: false,
             contentType: false,
             processData: false,
@@ -78,8 +78,8 @@
         var query = $('.js-query').val();
         query = encodeURI(query);
 
-        var options = this.getOptions(this.queryEndpoint);
-        options.url = this.query.url + query;
+        var options = this.getOptions(this.resolveEndpoint);
+        options.url = this.resolveEndpoint.url + query;
         options.method = 'GET';
 
         this.loading(true);
