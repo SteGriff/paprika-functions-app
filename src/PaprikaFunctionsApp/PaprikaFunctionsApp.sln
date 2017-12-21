@@ -35,6 +35,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project", "Project", "{AB98
 	ProjectSection(SolutionItems) = preProject
 		..\..\docs\api.md = ..\..\docs\api.md
 		..\..\readme.md = ..\..\readme.md
+		..\..\docs\release-procedure.md = ..\..\docs\release-procedure.md
 		..\..\docs\service-architecture.md = ..\..\docs\service-architecture.md
 	EndProjectSection
 EndProject

@@ -1,11 +1,21 @@
 # Paprika Functions App
 
-This is a WIP attempt to host [Paprika.Net][paprikanet] in an Azure Functions App so that it can be stateless and serverless.
-
-For some design principles and API, please see [`/docs/api.md`][api]
+This is a WIP endeavour to host [Paprika.Net][paprikanet] in an Azure Functions App so that it can be stateless and serverless.
 
 [paprikanet]: https://github.com/stegriff/paprika.net
+
+## Repo contents
+
+	/docs  - Documentation
+	/env   - Environment (hidden files)
+	/src   - Source code
+	/test  - Test data and other files to support testing
+
+
+For some design principles and API, please see [`/docs/api.md`][api]. Take a look at the other [`/docs/`][docs] as well.
+
 [api]: /docs/api.md
+[docs]: /docs/
 
 ## Prerequisites To Do
 
