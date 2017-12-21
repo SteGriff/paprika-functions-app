@@ -11,16 +11,23 @@
         url: '/api/Grammar/UploadText/',
         key: 'aUJaV591ZybgjVBvX7X1a/0SUJPwdE6NpUKnjRAuzr4AS12mf8vUow=='
     };
+    this.getGrammarEndpoint = {
+        url: '/api/Grammar/GetGrammar/',
+        key: '',
+    }
+    this.newAnonEndpoint = {
+        url: '/api/Anon/New/',
+        key: '',
+    }
+    this.newUserEndpoint = {
+        url: '/api/User/New/',
+        key: '',
+    }
 
     //I would do anything for scope
     me = this;
-
-    this.getInstructions = function () {
-        //This works; inner functions in js have access to all the variables in the outer function
-        return instructions;
-    }
-
-    this.getOptions = function (endpoint) {
+    
+    this.getOptions = function (endpoint, callback) {
 
         newLine = function (success, status, response) {
             var cssClass = success ? "success" : "error"
@@ -40,6 +47,9 @@
             method: 'POST',
             success: function onSuccess(response, statusWord, xhr) {
                 $('.js-results').append(newLine(true, xhr.statusText, xhr.responseText));
+                if (typeof callback === 'function') {
+                    callback(response);
+                }
             },
             error: function onError(xhr, statusWord, response) {
                 $('.js-results').append(newLine(false, xhr.statusText, xhr.responseText));
@@ -80,6 +90,19 @@
 
         var options = this.getOptions(this.resolveEndpoint);
         options.url = this.resolveEndpoint.url + query;
+        options.method = 'GET';
+
+        this.loading(true);
+        $.ajax(options);
+    }
+
+    this.getGrammar = function () {
+
+        var populateGrammar = function (response) {
+            $('.js-grammar-text').val(response);
+        }
+
+        var options = this.getOptions(this.getGrammarEndpoint, populateGrammar);
         options.method = 'GET';
 
         this.loading(true);
