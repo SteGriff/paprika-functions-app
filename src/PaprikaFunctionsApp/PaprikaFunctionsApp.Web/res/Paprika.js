@@ -1,26 +1,29 @@
-﻿function Paprika() {
+﻿function Paprika(urlRoot) {
+
+    this.baseUrl = urlRoot;
+
     this.uploadFileEndpoint = {
-        url: '/api/Grammar/UploadFile/',
+        url: this.baseUrl + '/api/Grammar/UploadFile/',
         key: 'q7HVSreWULwdAbSFbuG517bakta77cyDG5ZGv5ZPyWdPTLVze3fHbA=='
     };
     this.resolveEndpoint = {
-        url: '/api/Grammar/Resolve/',
+        url: this.baseUrl + '/api/Grammar/Resolve/',
         key: '84DlNVzNcAQf2s6P6PddI8lEcfRhPWZFhy3UPOz/4zWWgbnB3mqzMA=='
     };
     this.uploadTextEndpoint = {
-        url: '/api/Grammar/UploadText/',
+        url: this.baseUrl + '/api/Grammar/UploadText/',
         key: 'aUJaV591ZybgjVBvX7X1a/0SUJPwdE6NpUKnjRAuzr4AS12mf8vUow=='
     };
     this.getGrammarEndpoint = {
-        url: '/api/Grammar/GetGrammar/',
+        url: this.baseUrl + '/api/Grammar/GetGrammar/',
         key: '',
     }
     this.newAnonEndpoint = {
-        url: '/api/Anon/New/',
+        url: this.baseUrl + '/api/Anon/New/',
         key: '',
     }
     this.newUserEndpoint = {
-        url: '/api/User/New/',
+        url: this.baseUrl + '/api/User/New/',
         key: '',
     }
 

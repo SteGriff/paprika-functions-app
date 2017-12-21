@@ -15,7 +15,7 @@ namespace PaprikaFunctionsApp
         private static AzureStorageProvider _storageProvider;
 
         [FunctionName("GetGrammar")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = null)]HttpRequestMessage req, TraceWriter log)
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = "Grammar/GetGrammar")]HttpRequestMessage req, TraceWriter log)
         {
             try
             {
