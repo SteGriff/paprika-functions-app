@@ -11,18 +11,29 @@ For some design principles and API, please see [`/docs/api.md`][api]
 
 - [x] Release Paprika.Net ~~v1.1~~ v1.2.0 on GitHub  
 - [x] Publish ~~v1.1~~ v1.2.0 as a NuGet package  
-- [x] Update my VS2017 to 17.4  
+- [x] Update my VS2017 to 15.4  
 - [x] Download Azure workload update with project template for Functions App
-- [ ] Start Functions App and import NuGet package
-- [ ] Then all we have to is write it ;)
+- [x] Start Functions App and import NuGet package
+- [x] Then all we have to is write it ;)
 
 ## Development Stages
 
- 0. Static-grammar function app with no auth **MVP**
- 0. Single user function app environment loading from storage (no auth)
+ 0. ~~Static-grammar function app with no auth **MVP**~~
+ 0. ~~Single user function app environment loading from storage (no auth)~~
  0. Multi-user function app loading per-user grammars from storage
 
 ## Aims
 
  * Minimum viable product working in Dec 2017
  * Multi-user service available Jan/Feb 2018
+
+ ## Status
+
+ I have a working multi-user online version! This will be ready in Dec/Jan. It is currently online but I've decided not to publish it openly until it is user-friendly.
+
+ ## To Do
+
+ - [ ] Anonymous users
+ - [ ] Default grammars
+ - [ ] User creation
+ - [ ] Sensible login workflow#
