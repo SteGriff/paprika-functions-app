@@ -27,6 +27,15 @@
         key: '',
     }
 
+    this.getUsername()
+    {
+        return $('.js-username').val();
+    }
+    this.getPassword()
+    {
+        return $('.js-password').val();
+    }
+
     //I would do anything for scope
     me = this;
     
@@ -39,8 +48,8 @@
 
         return {
             beforeSend: function (request) {
-                request.setRequestHeader('username', $('.js-username').val());
-                request.setRequestHeader('password', $('.js-password').val());
+                request.setRequestHeader('username', this.getUsername());
+                request.setRequestHeader('password', this.getPassword);
                 request.setRequestHeader('x-functions-key', endpoint.key);
             },
             url: endpoint.url,
@@ -112,12 +121,47 @@
         $.ajax(options);
     }
 
-    this.loading = function (isOn) {
+    this.createAnon = function ()
+    {
+        var useAnonData = function (response)
+        {
+            
+        }
+
+        var options = this.getOptions(this.newAnonEndpoint);
+        options.method = 'POST';
+
+        this.loading(true);
+        $.ajax(options);
+    }
+
+    this.loading = function (isOn, text) {
+        var $loader = $('.js-loading');
         if (isOn) {
-            $('.js-loading').show();
+            if (text) {
+                $loader.text(text);
+            }
+            else
+            {
+                $loader.text('Loading...');
+            }
+            $loader.show();
         }
         else {
-            $('.js-loading').hide();
+            $loader.hide();
+        }
+    }
+
+    this.setupInitialView() = function()
+    {
+        var username = this.getUsername();
+        if (username)
+        {
+            this.getGrammar();
+        }
+        else
+        {
+            this.createAnon();
         }
     }
 }

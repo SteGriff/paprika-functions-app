@@ -33,6 +33,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "PaprikaFunctionsApp.Web", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project", "Project", "{AB98F6DF-288A-477C-824D-B3DCFFD0F88D}"
 	ProjectSection(SolutionItems) = preProject
+		..\..\docs\anonymous-usage-flow.md = ..\..\docs\anonymous-usage-flow.md
 		..\..\docs\api.md = ..\..\docs\api.md
 		..\..\readme.md = ..\..\readme.md
 		..\..\docs\release-procedure.md = ..\..\docs\release-procedure.md

@@ -36,7 +36,9 @@ namespace PaprikaFunctionsApp.Common
         public GrammarModel ReadFromCache(string username)
         {
             var table = _tableAccess.GetTable("grammar");
-            var query = new TableQuery<GrammarEntity>() { FilterString = TableQuery.GenerateFilterCondition("PartitionKey", "eq", username) };
+            var query = new TableQuery<GrammarEntity>() {
+                FilterString = TableQuery.GenerateFilterCondition("PartitionKey", "eq", username)
+            };
             var results = table.ExecuteQuerySegmentedAsync(query, new TableContinuationToken()).Result;
             var latestGrammar = results.Results.OrderByDescending(g => g.RowKey).FirstOrDefault();
             try
@@ -49,5 +51,25 @@ namespace PaprikaFunctionsApp.Common
                 return null;
             }
         }
+
+        public Status<string> CopyCache(string fromUser, string toUser)
+        {
+            //TODO Handle errors
+            var table = _tableAccess.GetTable("grammar");
+            var query = new TableQuery<GrammarEntity>() {
+                FilterString = TableQuery.GenerateFilterCondition("PartitionKey", "eq", fromUser)
+            };
+            var results = table.ExecuteQuerySegmentedAsync(query, new TableContinuationToken()).Result;
+            var latestGrammar = results.Results.OrderByDescending(g => g.RowKey).FirstOrDefault();
+
+            //Copy to new user
+            latestGrammar.PartitionKey = toUser;
+
+            var insert = TableOperation.Insert(latestGrammar);
+            var result = table.ExecuteAsync(insert).Result;
+
+            return new Status<string>(true);
+        }
+
     }
 }
