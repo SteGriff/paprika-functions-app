@@ -27,18 +27,16 @@
         key: '',
     }
 
-    this.getUsername()
-    {
+    this.getUsername = function () {
         return $('.js-username').val();
     }
-    this.getPassword()
-    {
+    this.getPassword = function () {
         return $('.js-password').val();
     }
 
     //I would do anything for scope
     me = this;
-    
+
     this.getOptions = function (endpoint, callback) {
 
         newLine = function (success, status, response) {
@@ -48,8 +46,8 @@
 
         return {
             beforeSend: function (request) {
-                request.setRequestHeader('username', this.getUsername());
-                request.setRequestHeader('password', this.getPassword);
+                request.setRequestHeader('username', me.getUsername());
+                request.setRequestHeader('password', me.getPassword());
                 request.setRequestHeader('x-functions-key', endpoint.key);
             },
             url: endpoint.url,
@@ -121,14 +119,13 @@
         $.ajax(options);
     }
 
-    this.createAnon = function ()
-    {
-        var useAnonData = function (response)
-        {
-            
+    this.createAnon = function () {
+        console.log("Create Anon");
+        var useAnonData = function (response) {
+            console.log("Use anon data", response);
         }
 
-        var options = this.getOptions(this.newAnonEndpoint);
+        var options = this.getOptions(this.newAnonEndpoint, useAnonData);
         options.method = 'POST';
 
         this.loading(true);
@@ -141,8 +138,7 @@
             if (text) {
                 $loader.text(text);
             }
-            else
-            {
+            else {
                 $loader.text('Loading...');
             }
             $loader.show();
@@ -152,16 +148,17 @@
         }
     }
 
-    this.setupInitialView() = function()
-    {
+    this.setupInitialView = function () {
         var username = this.getUsername();
-        if (username)
-        {
+        if (username) {
             this.getGrammar();
         }
-        else
-        {
+        else {
             this.createAnon();
         }
     }
+
+    //We're in a function body
+    //Do setup
+    this.setupInitialView();
 }

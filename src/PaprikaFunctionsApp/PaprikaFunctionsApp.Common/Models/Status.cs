@@ -5,7 +5,8 @@
         public bool Success { get; set; }
         public T Attachment { get; set; }
 
-        public Status(T attachment, bool success) {
+        public Status(bool success, T attachment)
+        {
             Attachment = attachment;
             Success = success;
         }

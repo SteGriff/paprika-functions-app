@@ -22,7 +22,7 @@ namespace PaprikaFunctionsApp
             }
             else
             {
-                return new Status<HttpResponseMessage>(req.CreateResponse(HttpStatusCode.Forbidden, "No username received"), false);
+                return new Status<HttpResponseMessage>(false, req.CreateResponse(HttpStatusCode.Forbidden, "No username received"));
             }
 
             string plainPasswordString;
@@ -32,7 +32,7 @@ namespace PaprikaFunctionsApp
             }
             else
             {
-                return new Status<HttpResponseMessage>(req.CreateResponse(HttpStatusCode.Forbidden, "No password received"), false);
+                return new Status<HttpResponseMessage>(false, req.CreateResponse(HttpStatusCode.Forbidden, "No password received"));
             }
 
             //Get the user and check their auth
@@ -49,7 +49,7 @@ namespace PaprikaFunctionsApp
             // (this is an Infosec measure to avoid revealing existence of usernames)
             if (!isAuthed)
             {
-                return new Status<HttpResponseMessage>(req.CreateResponse(HttpStatusCode.Forbidden, "Incorrect username/password combination"), false);
+                return new Status<HttpResponseMessage>(false, req.CreateResponse(HttpStatusCode.Forbidden, "Incorrect username/password combination"));
             }
 
             return new Status<HttpResponseMessage>(true);

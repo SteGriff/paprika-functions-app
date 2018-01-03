@@ -37,6 +37,9 @@ namespace PaprikaFunctionsApp
                 return req.CreateResponse(HttpStatusCode.InternalServerError, "Failed to create anon user: " + result.Attachment);
             }
 
+            var gramCache = new GrammarCache(_storageProvider);
+            gramCache.CopyCache("default", theName.Name);
+
             return req.CreateResponse<BaseCredentials>(HttpStatusCode.Created, theName);
         }
     }

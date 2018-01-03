@@ -28,7 +28,7 @@ namespace PaprikaFunctionsApp.Common
             var result = table.ExecuteAsync(insert).Result;
             if (result != null)
             {
-                return new Status<object>(result.Result, true);
+                return new Status<object>(true, result.Result);
             }
             return new Status<object>(false);
         }

@@ -21,7 +21,7 @@ namespace PaprikaFunctionsApp
             }
             catch (Exception ex)
             {
-                return new Status<HttpResponseMessage>(req.CreateResponse(HttpStatusCode.InternalServerError, "Failed to parse grammar: " + ex.Message), false);
+                return new Status<HttpResponseMessage>(false, req.CreateResponse(HttpStatusCode.InternalServerError, "Failed to parse grammar: " + ex.Message));
             }
 
             try
@@ -32,7 +32,7 @@ namespace PaprikaFunctionsApp
             }
             catch (Exception ex)
             {
-                return new Status<HttpResponseMessage>(req.CreateResponse(HttpStatusCode.InternalServerError, "Failed to cache grammar: " + ex.Message), false);
+                return new Status<HttpResponseMessage>(false, req.CreateResponse(HttpStatusCode.InternalServerError, "Failed to cache grammar: " + ex.Message));
             }
 
             return new Status<HttpResponseMessage>(true);

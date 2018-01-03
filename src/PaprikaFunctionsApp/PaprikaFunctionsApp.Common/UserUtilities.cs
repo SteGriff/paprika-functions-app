@@ -46,7 +46,7 @@ namespace PaprikaFunctionsApp.Common
             }
             catch (Exception ex)
             {
-                return new Status<string>(ex.Message, false);
+                return new Status<string>(false, ex.Message);
             }
             return new Status<string>(true);
         }

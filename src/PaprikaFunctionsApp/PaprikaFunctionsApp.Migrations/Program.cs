@@ -14,17 +14,101 @@ namespace PaprikaFunctionsApp.Migrations
         public static IConfigurationRoot Configuration;
         private static AzureStorageProvider _storageProvider;
 
+        private const string USERS = "users";
+        private const string GRAMMAR = "grammar";
+
         static void Main(string[] args)
         {
-            _storageProvider = new AzureStorageProvider(GetConnectionString());
+            string command = "";
+
+            Output("Starting...");
+            string connectionString = GetConnectionString();
+            Output("Connection string is: {0}", connectionString);
+            _storageProvider = new AzureStorageProvider(connectionString);
             var tableAccess = new TableUtilities(_storageProvider);
-            var usersTable = tableAccess.GetTable("users");
 
-            tableAccess.DropTableAsync("users").Wait();
+            //Ready
+            PrintHelpText();
 
-            //Table has been dropped; recreate it
-            usersTable = tableAccess.GetTable("users");
-            MakeAndCheckUsers(usersTable);
+            while (command.ToLower() != "exit")
+            {
+                command = Prompt();
+                switch (command.ToLower())
+                {
+                    case "drop users":
+                    case "du":
+                        Output("Dropping users table...");
+                        var dropUsers = DropTable(USERS, tableAccess);
+                        if (!dropUsers.Success) { Output(dropUsers.Attachment); }
+                        break;
+                    case "drop grammar":
+                    case "dg":
+                        Output("Dropping grammar table...");
+                        var dropGrammar = DropTable(GRAMMAR, tableAccess);
+                        if (!dropGrammar.Success) { Output(dropGrammar.Attachment); }
+                        break;
+                    case "gen users":
+                    case "gu":
+                        Output("Regenerating basic users data...");
+                        CreateFakeUsers(tableAccess);
+                        SelectAndPrint(tableAccess, USERS);
+                        break;
+                    case "select users":
+                    case "su":
+                        SelectAndPrint(tableAccess, USERS);
+                        break;
+                    case "select grammar":
+                    case "sg":
+                        SelectAndPrint(tableAccess, GRAMMAR);
+                        break;
+                }
+                Output("Finished operation");
+            }
+                        
+        }
+
+        private static Status<string> DropTable(string tableName, TableUtilities tableAccess)
+        {
+            try
+            {
+                tableAccess.DropTableAsync(tableName).Wait();
+            }
+            catch (Exception ex)
+            {
+                return new Status<string>(false, ex.Message);
+            }
+            return new Status<string>(true);
+        }
+
+        private static void PrintHelpText()
+        {
+            Output();
+            Output("Enter a command and press return:");
+            Output("select users (su) - View a list of existing users");
+            Output("drop users (du) - Drop the users table");
+            Output("drop grammar (dg) - Drop the grammar table");
+            Output("gen users (gu) - Generate sample users (drop it first)");
+            Output("gen grammar (gg) - Generate grammar for 'default' user");
+            Output("exit - Quit");
+        }
+
+        private static void Output()
+        {
+            Console.WriteLine();
+        }
+        private static void Output(string aString)
+        {
+            Console.WriteLine(aString);
+        }
+        private static void Output(string format, params object[] args)
+        {
+            Console.WriteLine(format, args);
+        }
+
+        private static string Prompt()
+        {
+            Console.Write("> ");
+            return Console.ReadLine();
         }
 
         private static void SetupConfiguration()
@@ -45,33 +129,34 @@ namespace PaprikaFunctionsApp.Migrations
             string conString = Configuration.GetConnectionString("PrimaryStorage");
             return conString;
         }
-
-        private static void MakeAndCheckUsers(CloudTable usersTable)
+        
+        private static void CreateFakeUsers(TableUtilities tableAccess)
         {
-            CreateFakeUsers(usersTable);
+            CloudTable table = tableAccess.GetTable(USERS);
 
-            CheckFakeUsers(usersTable);
+            const string DEFAULT_USER = "default";
+            var fakeNames = new List<string> { "adam", "beatrice", "charlie", "dave", "emily", DEFAULT_USER };
 
-            Console.WriteLine("Done");
-            Console.ReadLine();
-        }
-
-        private static void CreateFakeUsers(CloudTable table)
-        {
-            var fakeNames = new List<string> { "adam", "beatrice", "charlie", "dave", "emily" };
-            
             foreach (var name in fakeNames)
             {
                 string password = name + "password";
-                
+                if (name == DEFAULT_USER)
+                {
+                    password = "ALongAndSecureSecretIsBetterThanAnOreo" + DateTime.Now.ToString("HHmmssff");
+                    Output("Default user password: '{0}' (save it now)", password);
+                }
+
                 var newUser = new UserEntity(name, password);
                 var insert = TableOperation.Insert(newUser);
                 table.ExecuteAsync(insert).Wait();
             }
         }
 
-        private static void CheckFakeUsers(CloudTable table)
+        private static void SelectAndPrint(TableUtilities tableAccess, string tableName)
         {
+            Output("Loading {0} table for display:...", tableName);
+            CloudTable table = tableAccess.GetTable(tableName);
+
             var token = new TableContinuationToken();
             var lookup = new TableQuery<UserEntity>();
             var resultsAsync = table.ExecuteQuerySegmentedAsync(lookup, token);
@@ -79,7 +164,7 @@ namespace PaprikaFunctionsApp.Migrations
             var result = resultsAsync.Result;
             foreach (var res in result)
             {
-                Console.WriteLine("Key: {0}; Row: {1}", res.PartitionKey, res.RowKey);
+                Output("Key: {0}; Row: {1}", res.PartitionKey, res.RowKey);
             }
         }
     }
