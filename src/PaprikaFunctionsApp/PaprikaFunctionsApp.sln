@@ -40,6 +40,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project", "Project", "{AB98
 		..\..\docs\service-architecture.md = ..\..\docs\service-architecture.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaprikaFunctionsApp.Common.Tests", "PaprikaFunctionsApp.Common.Tests\PaprikaFunctionsApp.Common.Tests.csproj", "{DBE045F4-A7E0-495D-8718-BAF52297588E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,6 +64,10 @@ Global
 		{3E56B629-3F7A-421F-B7A4-07E2A9273A56}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E56B629-3F7A-421F-B7A4-07E2A9273A56}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{3E56B629-3F7A-421F-B7A4-07E2A9273A56}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{DBE045F4-A7E0-495D-8718-BAF52297588E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBE045F4-A7E0-495D-8718-BAF52297588E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBE045F4-A7E0-495D-8718-BAF52297588E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBE045F4-A7E0-495D-8718-BAF52297588E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

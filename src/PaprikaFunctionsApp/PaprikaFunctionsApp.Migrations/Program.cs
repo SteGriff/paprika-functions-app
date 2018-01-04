@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage.Table;
 using PaprikaFunctionsApp.Common;
+using PaprikaFunctionsApp.Common.Behaviour;
 using PaprikaFunctionsApp.Common.Models;
 using System;
 using System.Collections.Generic;
@@ -53,6 +54,12 @@ namespace PaprikaFunctionsApp.Migrations
                         Output("Regenerating basic users data...");
                         CreateFakeUsers(tableAccess);
                         SelectAndPrint(tableAccess, USERS);
+                        break;
+                    case "gen grammar":
+                    case "gg":
+                        Output("Generating default grammar...");
+                        var genGrammar = GenerateGrammar(tableAccess);
+                        if (!genGrammar.Success) { Output(genGrammar.Attachment); }
                         break;
                     case "select users":
                     case "su":
@@ -156,6 +163,7 @@ namespace PaprikaFunctionsApp.Migrations
         {
             CloudTable table = tableAccess.GetTable(GRAMMAR);
 
+            Output("Getting file...");
             string defaultGrammarContent = "";
             try
             {
@@ -170,10 +178,27 @@ namespace PaprikaFunctionsApp.Migrations
                 return new Status<string>(false, "default-grammar.txt not found - " + ex.Message);
             }
 
+            Output("Parse using Paprika and write to cache...");
+            var parseAndCacheAction = new ParseAndCache();
+            var result = parseAndCacheAction.Run(defaultGrammarContent, DEFAULT_USER, _storageProvider);
 
+            if (!result.Success)
+            {
+                return new Status<string>(false, result.Attachment.Message);
+            }
+
+            Output("Write to blob...");
+            try
+            {
+                var grammarBlob = new GrammarBlob(_storageProvider);
+                grammarBlob.WriteGrammar(DEFAULT_USER, defaultGrammarContent);
+            }
+            catch (Exception ex)
+            {
+                return new Status<string>(false, "Failed to write grammar to blob: " + ex.Message);
+            }
 
             return new Status<string>(true);
-
         }
 
         private static void SelectAndPrint(TableUtilities tableAccess, string tableName)
