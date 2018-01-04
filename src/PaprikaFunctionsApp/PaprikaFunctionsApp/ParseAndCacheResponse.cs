@@ -1,6 +1,8 @@
 ﻿using Microsoft.Azure.WebJobs;
 using Paprika.Net;
 using PaprikaFunctionsApp.Common;
+using PaprikaFunctionsApp.Common.Behaviour;
+using PaprikaFunctionsApp.Common.Extensions;
 using PaprikaFunctionsApp.Common.Models;
 using System;
 using System.Net;
@@ -12,30 +14,17 @@ namespace PaprikaFunctionsApp
     {
         public Status<HttpResponseMessage> Get(string fileContent, string username, AzureStorageProvider storageProvider, [HttpTrigger]HttpRequestMessage req)
         {
-            Core engine;
-            try
+            var parseAndCacheAction = new ParseAndCache();
+            var result = parseAndCacheAction.Run(fileContent, username, storageProvider);
+            if (result.Success)
             {
-                var grammarLines = fileContent.Split(new char[] { '\n' });
-                engine = new Core();
-                engine.LoadGrammarFromString(grammarLines);
+                return new Status<HttpResponseMessage>(true);
             }
-            catch (Exception ex)
+            else
             {
-                return new Status<HttpResponseMessage>(false, req.CreateResponse(HttpStatusCode.InternalServerError, "Failed to parse grammar: " + ex.Message));
+                var statusCode = result.Attachment.GetHttpStatusCode();
+                return new Status<HttpResponseMessage>(false, req.CreateResponse(statusCode, result.Attachment.Message));
             }
-
-            try
-            {
-                var gramCache = new GrammarCache(storageProvider);
-                var grammarModel = new GrammarModel(engine.Grammar);
-                gramCache.WriteToCache(grammarModel, username, DateTime.Now);
-            }
-            catch (Exception ex)
-            {
-                return new Status<HttpResponseMessage>(false, req.CreateResponse(HttpStatusCode.InternalServerError, "Failed to cache grammar: " + ex.Message));
-            }
-
-            return new Status<HttpResponseMessage>(true);
         }
 
     }

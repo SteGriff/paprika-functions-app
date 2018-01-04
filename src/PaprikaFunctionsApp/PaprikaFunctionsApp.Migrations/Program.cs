@@ -16,6 +16,7 @@ namespace PaprikaFunctionsApp.Migrations
 
         private const string USERS = "users";
         private const string GRAMMAR = "grammar";
+        private const string DEFAULT_USER = "default"; 
 
         static void Main(string[] args)
         {
@@ -134,7 +135,6 @@ namespace PaprikaFunctionsApp.Migrations
         {
             CloudTable table = tableAccess.GetTable(USERS);
 
-            const string DEFAULT_USER = "default";
             var fakeNames = new List<string> { "adam", "beatrice", "charlie", "dave", "emily", DEFAULT_USER };
 
             foreach (var name in fakeNames)
@@ -150,6 +150,30 @@ namespace PaprikaFunctionsApp.Migrations
                 var insert = TableOperation.Insert(newUser);
                 table.ExecuteAsync(insert).Wait();
             }
+        }
+
+        private static Status<string> GenerateGrammar(TableUtilities tableAccess)
+        {
+            CloudTable table = tableAccess.GetTable(GRAMMAR);
+
+            string defaultGrammarContent = "";
+            try
+            {
+                defaultGrammarContent = File.ReadAllText("default-grammar.txt");
+                if (string.IsNullOrWhiteSpace(defaultGrammarContent))
+                {
+                    return new Status<string>(false, "default-grammar.txt is empty");
+                }
+            }
+            catch (Exception ex)
+            {
+                return new Status<string>(false, "default-grammar.txt not found - " + ex.Message);
+            }
+
+
+
+            return new Status<string>(true);
+
         }
 
         private static void SelectAndPrint(TableUtilities tableAccess, string tableName)

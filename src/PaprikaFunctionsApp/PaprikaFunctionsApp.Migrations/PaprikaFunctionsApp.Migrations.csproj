@@ -15,4 +15,10 @@
     <ProjectReference Include="..\PaprikaFunctionsApp.Common\PaprikaFunctionsApp.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="default-grammar.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
