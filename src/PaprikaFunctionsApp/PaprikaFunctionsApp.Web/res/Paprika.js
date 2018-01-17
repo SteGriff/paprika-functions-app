@@ -34,15 +34,26 @@
         return $('.js-password').val();
     }
 
+    this.setUsername = function (value) {
+        $('.js-username').val(value);
+    }
+    this.setPassword = function (value) {
+        $('.js-password').val(value);
+    }
+
+    this.report = function (success, status, response) {
+        newLine = function (success, status, response) {
+            var cssClass = success ? "bg-green" : "bg-red"
+            return "<li><span class='pa1 br2 " + cssClass + "'>" + status + "</span> <code>" + response + "</code></li>"
+        }
+
+        $('.js-results').append(newLine(true, status, response));
+    }
+
     //I would do anything for scope
     me = this;
 
-    this.getOptions = function (endpoint, callback) {
-
-        newLine = function (success, status, response) {
-            var cssClass = success ? "success" : "error"
-            return "<li><span class='label " + cssClass + "'>" + status + "</span><code>" + response + "</code></li>"
-        }
+    this.getOptions = function (endpoint, successCallback, errorCallback, doReport = true) {
 
         return {
             beforeSend: function (request) {
@@ -56,13 +67,20 @@
             processData: false,
             method: 'POST',
             success: function onSuccess(response, statusWord, xhr) {
-                $('.js-results').append(newLine(true, xhr.statusText, xhr.responseText));
-                if (typeof callback === 'function') {
-                    callback(response);
+                if (doReport) {
+                    me.report(true, xhr.statusText, xhr.responseText);
+                }
+                if (typeof successCallback === 'function') {
+                    successCallback(response);
                 }
             },
             error: function onError(xhr, statusWord, response) {
-                $('.js-results').append(newLine(false, xhr.statusText, xhr.responseText));
+                if (doReport) {
+                    me.report(false, xhr.statusText, xhr.responseText);
+                }
+                if (typeof errorCallback === 'function') {
+                    errorCallback(response);
+                }
             },
             complete: function onResponse(data) {
                 me.loading(false);
@@ -108,11 +126,16 @@
 
     this.getGrammar = function () {
 
-        var populateGrammar = function (response) {
+        var populateGrammarOnSuccess = function (response) {
             $('.js-grammar-text').val(response);
         }
 
-        var options = this.getOptions(this.getGrammarEndpoint, populateGrammar);
+        var retryOnError = function (response) {
+            console.log("Set timeout to retry...");
+            setTimeout(me.getGrammar, 2000);
+        }
+
+        var options = this.getOptions(this.getGrammarEndpoint, populateGrammarOnSuccess, retryOnError, false);
         options.method = 'GET';
 
         this.loading(true);
@@ -121,8 +144,15 @@
 
     this.createAnon = function () {
         console.log("Create Anon");
+
+        me.report(true, "Just a sec...", "I'm generating an anonymous test user for you to use");
+
         var useAnonData = function (response) {
             console.log("Use anon data", response);
+            me.setUsername(response.Name);
+            me.setPassword(response.Password);
+            console.log("Get grammar...");
+            me.getGrammar();
         }
 
         var options = this.getOptions(this.newAnonEndpoint, useAnonData);

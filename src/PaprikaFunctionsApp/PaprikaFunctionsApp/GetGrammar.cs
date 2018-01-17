@@ -35,8 +35,17 @@ namespace PaprikaFunctionsApp
             }
 
             var grammarAccess = new GrammarBlob(_storageProvider);
+            string grammarString;
 
-            var grammarString = await grammarAccess.ReadGrammarAsync(authResponse.Username);
+            try
+            {
+                grammarString = await grammarAccess.ReadGrammarAsync(authResponse.Username);
+            }
+            catch (Exception ex)
+            {
+                return req.CreateResponse(HttpStatusCode.InternalServerError, "Not ready");
+            }
+            
             return req.CreateResponse(grammarString);
         }
     }

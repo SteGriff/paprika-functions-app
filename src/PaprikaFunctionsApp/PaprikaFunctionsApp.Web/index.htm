@@ -18,24 +18,26 @@
                 </a>
             </div>
             <div class="db dtc-ns v-mid tl tr-ns mt2 mt0-ns">
-                <a title="Documentation" href="/docs/"
+                <!--<a title="Documentation" href="/docs/"
                    class="f6 fw6 hover-blue link black-70 mr2 mr3-ns dib">
                     Docs
                 </a>
-                <a title="Components" href="/components/"
+                <a title="" href=""
                    class="f6 fw6 hover-blue link black-70 mr2 mr3-ns dib">
-                    Components
-                </a>
+                    Link
+                </a>-->
 
-                <span class="f6 black-70 mr1 dib">
+                <span class="f6 ttu black-70 mr1 dib">
                     Credentials:
                 </span>
 
                 <span>
-                    <input type="text" placeholder="username" class="js-username pa1 ph2 h2
+                    <input type="text" placeholder="username" class="js-username
+                           pa1 ph2 h2
                        b--black-60 black-80 bg-white bw1 ba"/>
 
-                    <input type="password" placeholder="password" class="js-password pa1 ph2 h2
+                    <input type="password" placeholder="password" class="js-password
+                           pa1 ph2 h2
                        b--black-60 black-80 bg-white bw1 ba"/>
 
                     <button type="button" onclick="root.getGrammar()"
@@ -51,6 +53,23 @@
 
     <main class="w-100 bt b--black-10 bg-white">
         <div class="ph1 ph3-ns">
+
+            <div class="w-100">
+
+                <p><label for="query" class="f6 ttu">Paprika Query:</label></p>
+                <input name="query" id="query" type="text" class="js-query
+                       h2 w-90 ph1
+                       b--black-60 black-80 bg-white bw1 ba">
+
+                <button type="button" onclick="root.query()"
+                        class="
+                            h2
+                            b--black-80 black-80 bg-white bw1 ba
+                            b pointer">
+                    Send
+                </button>
+
+            </div>
 
             <div class="w-100 w-50-ns fl-ns">
                 <p class="f6 ttu">Your Grammar:</p>
@@ -68,23 +87,7 @@
             </div>
 
             <div class="w-100 w-40-ns fr-ns b--black-10 bl-ns pl2-ns">
-
-                <!--<p>Upload grammar</p>
-                <input type="file" class="js-file">
-                <button type="button" onclick="upload()">Upload</button>-->
-
-                <p><label for="query" class="f6 ttu">Paprika Query:</label></p>
-                <input name="query" id="query" type="text" class="js-query
-                       w-100 pa2
-                       b--black-60 black-80 bg-white bw1 ba">
-                <button type="button" onclick="root.query()"
-                        class="mv1 pa1 ph3 w-100
-                            b--black-80 black-80 bg-white bw1 ba
-                            b pointer">
-                    Send
-                </button>
-
-                <p>Results <span class="js-loading label grey">loading...</span></p>
+                <p class="f6 ttu">Results: <span class="js-loading bg-gray pa1 br2">loading...</span></p>
                 <ul class="js-results"></ul>
             </div>
         </div>

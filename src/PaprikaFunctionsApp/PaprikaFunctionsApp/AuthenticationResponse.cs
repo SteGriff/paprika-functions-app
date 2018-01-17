@@ -19,6 +19,10 @@ namespace PaprikaFunctionsApp
             if (req.Headers.Contains("username"))
             {
                 Username = req.Headers.GetValues("username").FirstOrDefault();
+                if (Username.ToLower() == "default")
+                {
+                    return new Status<HttpResponseMessage>(false, req.CreateResponse(HttpStatusCode.Forbidden, "This user is not enabled"));
+                }
             }
             else
             {
