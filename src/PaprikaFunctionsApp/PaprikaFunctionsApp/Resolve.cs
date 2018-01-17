@@ -8,6 +8,7 @@ using Paprika.Net;
 using System;
 using Paprika.Net.Exceptions;
 using PaprikaFunctionsApp.Common;
+using System.Threading.Tasks;
 
 namespace PaprikaFunctionsApp
 {
@@ -16,8 +17,20 @@ namespace PaprikaFunctionsApp
         private static AzureStorageProvider _storageProvider;
 
         [FunctionName("Resolve")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "Grammar/Resolve/{query}")]HttpRequestMessage req, string query, TraceWriter log)
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "Grammar/Resolve")]HttpRequestMessage req, TraceWriter log)
         {
+            //Get query param from querystring
+            string query = req.GetQueryNameValuePairs()
+                .FirstOrDefault(q => string.Compare(q.Key, "query", true) == 0)
+                .Value;
+
+            if (string.IsNullOrEmpty(query))
+            { 
+                // Get query from request body instead
+                dynamic data = await req.Content.ReadAsAsync<object>();
+                query = data?.query;
+            }
+
             log.Info(string.Format("Incoming Resolve, q='{0}'", query));
 
             try

@@ -57,18 +57,19 @@
             <div class="w-100">
 
                 <p><label for="query" class="f6 ttu">Paprika Query:</label></p>
-                <input name="query" id="query" type="text" class="js-query
+                <form>
+                    <input name="query" id="query" type="text" class="js-query
                        h2 w-90 ph1
                        b--black-60 black-80 bg-white bw1 ba">
 
-                <button type="button" onclick="root.query()"
-                        class="
+                    <button type="submit" onclick="root.query(event)"
+                            class="
                             h2
                             b--black-80 black-80 bg-white bw1 ba
                             b pointer">
-                    Send
-                </button>
-
+                        Send
+                    </button>
+                </form>
             </div>
 
             <div class="w-100 w-50-ns fl-ns">
@@ -87,8 +88,8 @@
             </div>
 
             <div class="w-100 w-40-ns fr-ns b--black-10 bl-ns pl2-ns">
-                <p class="f6 ttu">Results: <span class="js-loading bg-gray pa1 br2">loading...</span></p>
-                <ul class="js-results"></ul>
+                <p class="f6 ttu">Results: <span class="js-loading bg-gray white pa1 br1">loading...</span></p>
+                <ul class="js-results lh-copy"></ul>
             </div>
         </div>
     </main>

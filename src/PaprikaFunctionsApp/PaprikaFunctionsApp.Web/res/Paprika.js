@@ -43,17 +43,17 @@
 
     this.report = function (success, status, response) {
         newLine = function (success, status, response) {
-            var cssClass = success ? "bg-green" : "bg-red"
-            return "<li><span class='pa1 br2 " + cssClass + "'>" + status + "</span> <code>" + response + "</code></li>"
+            var cssClass = success ? "bg-green" : "bg-red";
+            return "<li><span class='pa1 br1 " + cssClass + "'>" + status + "</span> <code>" + response + "</code></li>"
         }
 
-        $('.js-results').append(newLine(true, status, response));
+        $('.js-results').prepend(newLine(true, status, response));
     }
 
     //I would do anything for scope
     me = this;
 
-    this.getOptions = function (endpoint, successCallback, errorCallback, doReport = true) {
+    this.getOptions = function (endpoint, successCallback, errorCallback) {
 
         return {
             beforeSend: function (request) {
@@ -67,17 +67,12 @@
             processData: false,
             method: 'POST',
             success: function onSuccess(response, statusWord, xhr) {
-                if (doReport) {
-                    me.report(true, xhr.statusText, xhr.responseText);
-                }
                 if (typeof successCallback === 'function') {
                     successCallback(response);
                 }
             },
             error: function onError(xhr, statusWord, response) {
-                if (doReport) {
-                    me.report(false, xhr.statusText, xhr.responseText);
-                }
+                me.report(false, xhr.statusText, xhr.responseText);
                 if (typeof errorCallback === 'function') {
                     errorCallback(response);
                 }
@@ -112,16 +107,36 @@
         $.ajax(options);
     }
 
-    this.query = function () {
-        var query = $('.js-query').val();
-        query = encodeURI(query);
+    this.urlEncode = function (request)
+    {
+        var result = encodeURIComponent(request);
+        result = result.replace("#", "%23");
+        return result;
+    }
 
-        var options = this.getOptions(this.resolveEndpoint);
+    this.query = function (event) {
+
+        var showQueryResultOnSuccess = function (response) {
+            newLine = function (response) {
+                return "<li class='b'>" + response + "</li>"
+            }
+
+            $('.js-results').prepend(newLine(response));
+        }
+
+        var query = $('.js-query').val();
+        query = me.urlEncode(query);
+        console.log(query);
+
+        var options = this.getOptions(this.resolveEndpoint, showQueryResultOnSuccess);
         options.url = this.resolveEndpoint.url + query;
         options.method = 'GET';
 
         this.loading(true);
         $.ajax(options);
+
+        event.preventDefault();
+        return false;
     }
 
     this.getGrammar = function () {
@@ -129,13 +144,8 @@
         var populateGrammarOnSuccess = function (response) {
             $('.js-grammar-text').val(response);
         }
-
-        var retryOnError = function (response) {
-            console.log("Set timeout to retry...");
-            setTimeout(me.getGrammar, 2000);
-        }
-
-        var options = this.getOptions(this.getGrammarEndpoint, populateGrammarOnSuccess, retryOnError, false);
+        
+        var options = this.getOptions(this.getGrammarEndpoint, populateGrammarOnSuccess);
         options.method = 'GET';
 
         this.loading(true);
@@ -148,11 +158,12 @@
         me.report(true, "Just a sec...", "I'm generating an anonymous test user for you to use");
 
         var useAnonData = function (response) {
-            console.log("Use anon data", response);
+            //console.log("Use anon data", response);
             me.setUsername(response.Name);
             me.setPassword(response.Password);
-            console.log("Get grammar...");
+            //console.log("Get grammar...");
             me.getGrammar();
+            me.report(true, "Done", "Go ahead, you're now " + response.Name);
         }
 
         var options = this.getOptions(this.newAnonEndpoint, useAnonData);
