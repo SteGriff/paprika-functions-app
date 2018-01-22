@@ -5,6 +5,7 @@ using PaprikaFunctionsApp.Common.Behaviour;
 using PaprikaFunctionsApp.Common.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -17,7 +18,8 @@ namespace PaprikaFunctionsApp.Migrations
 
         private const string USERS = "users";
         private const string GRAMMAR = "grammar";
-        private const string DEFAULT_USER = "default"; 
+        private const string DEFAULT_USER = "default";
+        private const string STORAGE_EMULATOR = @"C:\Program Files (x86)\Microsoft SDKs\Azure\Storage Emulator\AzureStorageEmulator.exe";
 
         static void Main(string[] args)
         {
@@ -25,6 +27,16 @@ namespace PaprikaFunctionsApp.Migrations
 
             Output("Starting...");
             string connectionString = GetConnectionString();
+            if (connectionString.Contains("UseDevelopmentStorage=true"))
+            {
+                Output("Development storage detected... starting emulator");
+                var startEmulator = new ProcessStartInfo(STORAGE_EMULATOR, "start")
+                {
+                    UseShellExecute = true
+                };
+                Process.Start(startEmulator);
+            }
+
             Output("Connection string is: {0}", connectionString);
             _storageProvider = new AzureStorageProvider(connectionString);
             var tableAccess = new TableUtilities(_storageProvider);
@@ -72,7 +84,7 @@ namespace PaprikaFunctionsApp.Migrations
                 }
                 Output("Finished operation");
             }
-                        
+
         }
 
         private static Status<string> DropTable(string tableName, TableUtilities tableAccess)
@@ -137,7 +149,7 @@ namespace PaprikaFunctionsApp.Migrations
             string conString = Configuration.GetConnectionString("PrimaryStorage");
             return conString;
         }
-        
+
         private static void CreateFakeUsers(TableUtilities tableAccess)
         {
             CloudTable table = tableAccess.GetTable(USERS);

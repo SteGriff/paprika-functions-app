@@ -125,12 +125,12 @@
         }
 
         var query = $('.js-query').val();
-        query = me.urlEncode(query);
-        console.log(query);
 
         var options = this.getOptions(this.resolveEndpoint, showQueryResultOnSuccess);
-        options.url = this.resolveEndpoint.url + query;
-        options.method = 'GET';
+        options.url = this.resolveEndpoint.url
+        options.data = JSON.stringify({ "query": query });
+        options.contentType = "application/json";
+        options.method = 'POST';
 
         this.loading(true);
         $.ajax(options);
