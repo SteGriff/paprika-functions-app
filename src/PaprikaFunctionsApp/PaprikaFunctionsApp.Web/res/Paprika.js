@@ -1,6 +1,6 @@
 ﻿function Paprika(urlRoot) {
 
-    this.baseUrl = urlRoot;
+    this.baseUrl = urlRoot || "";
 
     this.uploadFileEndpoint = {
         url: this.baseUrl + '/api/Grammar/UploadFile/',
@@ -16,11 +16,11 @@
     };
     this.getGrammarEndpoint = {
         url: this.baseUrl + '/api/Grammar/GetGrammar/',
-        key: '',
+        key: 'RMMCAxuECnryL29QwzIiqB8JZ9LnrQF8JWb5whPpadcdCgayzveYIQ==',
     }
     this.newAnonEndpoint = {
         url: this.baseUrl + '/api/Anon/New/',
-        key: '',
+        key: 'Z3KhN4CAzjiilXrgohxb7s24cRkgWslIYZmeS9oqliafaSlOgMQEpw==',
     }
     this.newUserEndpoint = {
         url: this.baseUrl + '/api/User/New/',
