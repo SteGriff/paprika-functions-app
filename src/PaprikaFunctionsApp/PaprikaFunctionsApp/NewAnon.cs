@@ -27,24 +27,53 @@ namespace PaprikaFunctionsApp
                 return req.CreateResponse(HttpStatusCode.InternalServerError, "Storage Connection Error: " + ex.ToString());
             }
 
-            var theName = new AnonymousCredentials();
-
-            var userAccess = new UserUtilities(_storageProvider);
-            var result = await userAccess.CreateUserAsync(theName.Name, theName.Password);
-
-            if (!result.Success)
+            AnonymousCredentials theName;
+            try
             {
-                return req.CreateResponse(HttpStatusCode.InternalServerError, "Failed to create anon user: " + result.Attachment);
+                theName = new AnonymousCredentials();
+            }
+            catch (Exception ex)
+            {
+                return req.CreateResponse(HttpStatusCode.InternalServerError, "Name generation failed: " + ex.ToString());
             }
 
-            // Copy grammar blob
-            var sampleData = new SampleData(_storageProvider);
-            await sampleData.PopulateAsync(theName.Name);
+            try
+            {
+                var userAccess = new UserUtilities(_storageProvider);
+                var userCreationResult = await userAccess.CreateUserAsync(theName.Name, theName.Password);
 
-            // Copy grammar cache
-            var gramCache = new GrammarCache(_storageProvider);
-            gramCache.CopyCache("default", theName.Name);
-            
+                if (!userCreationResult.Success)
+                {
+                    return req.CreateResponse(HttpStatusCode.InternalServerError, "Failed to create anon user: " + userCreationResult.Attachment);
+                }
+            }
+            catch (Exception ex)
+            {
+                return req.CreateResponse(HttpStatusCode.InternalServerError, "User creation failed: " + ex.ToString());
+            }
+
+            try
+            {
+                // Copy grammar blob
+                var sampleData = new SampleData(_storageProvider);
+                await sampleData.PopulateAsync(theName.Name);
+            }
+            catch (Exception)
+            {
+                return req.CreateResponse(HttpStatusCode.InternalServerError, "Blob copy failed for new user - admin should re-run migrations");
+            }
+
+            try
+            {
+                // Copy grammar cache
+                var gramCache = new GrammarCache(_storageProvider);
+                gramCache.CopyCache("default", theName.Name);
+            }
+            catch (Exception)
+            {
+                return req.CreateResponse(HttpStatusCode.InternalServerError, "Cache copy failed for new user - admin should re-run migrations");
+            }
+
             return req.CreateResponse<BaseCredentials>(HttpStatusCode.Created, theName);
         }
     }
