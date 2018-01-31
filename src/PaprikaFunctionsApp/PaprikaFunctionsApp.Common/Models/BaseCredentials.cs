@@ -9,6 +9,8 @@ namespace PaprikaFunctionsApp.Common.Models
         public string Name { get; set; }
         public string Password { get; set; }
 
+        public BaseCredentials() { }
+
         public BaseCredentials(string name, string password)
         {
             Name = name;

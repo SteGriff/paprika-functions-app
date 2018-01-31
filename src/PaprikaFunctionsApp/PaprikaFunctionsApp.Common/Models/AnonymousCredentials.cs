@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace PaprikaFunctionsApp.Common.Models
 {
@@ -10,17 +8,12 @@ namespace PaprikaFunctionsApp.Common.Models
         {
             var rando = new Random();
             rando.Next();
-
-            //string root = rando.Next(0, 2) == 0
-            //    ? "Anon"
-            //    : "Rando";
-
-            string root = "User";
-
+            
             //Make a new random GUID and get the first chunk
             var newGuid = Guid.NewGuid();
             var guidPart = newGuid.ToString().Split(new[] { '-' })[0];
 
+            const string root = "User";
             Name = root + rando.Next(100, 1000) + guidPart;
             Password = Name + "password";
         }
