@@ -13,6 +13,7 @@ namespace PaprikaFunctionsApp.Common
     {
         private AzureStorageProvider _storageProvider;
         private TableUtilities _tableAccess;
+        const string GRAMMAR = "grammar";
 
         public GrammarCache(AzureStorageProvider storageProvider)
         {
@@ -22,7 +23,7 @@ namespace PaprikaFunctionsApp.Common
 
         public Status<object> WriteToCache(GrammarModel grammar, string username, DateTime created)
         {
-            var table = _tableAccess.GetTable("grammar");
+            var table = _tableAccess.GetTable(GRAMMAR);
             var newGrammar = new GrammarEntity(grammar, username, created);
             var insert = TableOperation.Insert(newGrammar);
             var result = table.ExecuteAsync(insert).Result;
@@ -33,16 +34,24 @@ namespace PaprikaFunctionsApp.Common
             return new Status<object>(false);
         }
 
-        public GrammarModel ReadFromCache(string username)
+        private GrammarEntity GetCurrentGrammarForUser(string username, out CloudTable table)
         {
-            var table = _tableAccess.GetTable("grammar");
-            var query = new TableQuery<GrammarEntity>() {
+            table = _tableAccess.GetTable(GRAMMAR);
+            var query = new TableQuery<GrammarEntity>()
+            {
                 FilterString = TableQuery.GenerateFilterCondition("PartitionKey", "eq", username)
             };
             var results = table.ExecuteQuerySegmentedAsync(query, new TableContinuationToken()).Result;
             var latestGrammar = results.Results.OrderByDescending(g => g.RowKey).FirstOrDefault();
+            return latestGrammar;
+        }
+
+        public GrammarModel ReadFromCache(string username)
+        {
             try
             {
+                CloudTable table;
+                var latestGrammar = GetCurrentGrammarForUser(username, out table);
                 var grammarObject = JsonConvert.DeserializeObject<GrammarModel>(latestGrammar.GrammarJson);
                 return grammarObject;
             }
@@ -54,25 +63,21 @@ namespace PaprikaFunctionsApp.Common
 
         public Status<string> CopyCache(string fromUser, string toUser)
         {
-            //TODO Handle errors
-            var table = _tableAccess.GetTable("grammar");
-            var query = new TableQuery<GrammarEntity>() {
-                FilterString = TableQuery.GenerateFilterCondition("PartitionKey", "eq", fromUser)
-            };
-            var results = table.ExecuteQuerySegmentedAsync(query, new TableContinuationToken()).Result;
-            var latestGrammar = results.Results.OrderByDescending(g => g.RowKey).FirstOrDefault();
+            try
+            {
+                CloudTable table;
+                var latestGrammar = GetCurrentGrammarForUser(fromUser, out table);
 
-            //Copy to new user
-            latestGrammar.PartitionKey = toUser;
+                //Copy to new user
+                latestGrammar.PartitionKey = toUser;
 
-            var insert = TableOperation.Insert(latestGrammar);
-            var result = table.ExecuteAsync(insert).Result;
-
-            return new Status<string>(true);
-        }
-
-        public Status<string> ReassociateCache(string fromUser, string toUser)
-        {
+                var insert = TableOperation.Insert(latestGrammar);
+                var result = table.ExecuteAsync(insert).Result;
+            }
+            catch (Exception ex)
+            {
+                return new Status<string>(false, "CopyCache failed: " + ex.ToString());
+            }
             
             return new Status<string>(true);
         }
