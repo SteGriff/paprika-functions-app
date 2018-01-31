@@ -50,5 +50,32 @@ namespace PaprikaFunctionsApp.Common
             }
             return new Status<string>(true);
         }
+        
+        public async Task<Status<string>> RenameUserAsync(string oldUsername, string newUsername, string newPassword)
+        {
+            try
+            {
+                //Create a new user record
+                // and associate the existing grammar cache and blob with the new record
+
+                var userCreationResult = await CreateUserAsync(newUsername, newPassword);
+                if (!userCreationResult.Success)
+                {
+                    return userCreationResult;
+                }
+
+                //Reassociate cache
+                var gc = new GrammarCache(_storageProvider);
+                gc.ReassociateCache(oldUsername, newUsername);
+
+                //Reassociate blob
+
+            }
+            catch (Exception ex)
+            {
+                return new Status<string>(false, ex.Message);
+            }
+            return new Status<string>(true);
+        }
     }
 }

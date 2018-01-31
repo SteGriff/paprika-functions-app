@@ -71,5 +71,10 @@ namespace PaprikaFunctionsApp.Common
             return new Status<string>(true);
         }
 
+        public Status<string> ReassociateCache(string fromUser, string toUser)
+        {
+            
+            return new Status<string>(true);
+        }
     }
 }

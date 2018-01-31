@@ -19,7 +19,7 @@ namespace PaprikaFunctionsApp.Common
         {
             CloudTableClient tableClient = _storageProvider.StorageAccount.CreateCloudTableClient();
             CloudTable table = tableClient.GetTableReference(tablename);
-            table.CreateIfNotExistsAsync();
+            table.CreateIfNotExistsAsync().Wait();
             
             return table;
         }
