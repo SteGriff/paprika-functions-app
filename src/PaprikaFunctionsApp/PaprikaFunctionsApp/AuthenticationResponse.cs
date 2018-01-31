@@ -45,8 +45,8 @@ namespace PaprikaFunctionsApp
             bool isAuthed = false;
             if (user != null)
             {
-                var encryptedPassword = Encryptor.Encrypt(plainPasswordString, user.RowKey);
-                isAuthed = encryptedPassword == user.EncryptedPassword;
+                var passwordSecured = CryptoKey.DeriveKey(plainPasswordString, user.RowKey);
+                isAuthed = passwordSecured == user.EncryptedPassword;
             }
 
             //If either the user is null or the password was wrong, display the same message

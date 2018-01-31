@@ -5,9 +5,9 @@ using System.Text;
 
 namespace PaprikaFunctionsApp.Common
 {
-    public static class Encryptor
+    public static class CryptoKey
     {
-        public static string Encrypt(string plainPasswordString, string salt)
+        public static string DeriveKey(string plainPasswordString, string salt)
         {
             var saltBytes = Encoding.UTF8.GetBytes(salt);
 
