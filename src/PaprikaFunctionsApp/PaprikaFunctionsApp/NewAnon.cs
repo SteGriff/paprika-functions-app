@@ -52,11 +52,13 @@ namespace PaprikaFunctionsApp
                 return req.CreateResponse(HttpStatusCode.InternalServerError, "User creation failed: " + ex.ToString());
             }
 
+            const string DEFAULT_USER = "default";
+
             try
             {
-                // Copy grammar blob
-                var sampleData = new SampleData(_storageProvider);
-                await sampleData.PopulateAsync(theName.Name);
+                //Copy the default grammar to storage for this user
+                var blob = new GrammarBlob(_storageProvider);
+                await blob.CopyGrammar(DEFAULT_USER, theName.Name);
             }
             catch (Exception)
             {
@@ -67,7 +69,7 @@ namespace PaprikaFunctionsApp
             {
                 // Copy grammar cache
                 var gramCache = new GrammarCache(_storageProvider);
-                gramCache.CopyCache("default", theName.Name);
+                gramCache.CopyCache(DEFAULT_USER, theName.Name);
             }
             catch (Exception)
             {

@@ -32,14 +32,14 @@ namespace PaprikaFunctionsApp.Common
             return user;
         }
 
-        public async Task<Status<string>> CreateUserAsync(string username, string password)
+        public async Task<Status<string>> CreateUserAsync(string username, string passwordPlain)
         {
             try
             {
                 var tableAccess = new TableUtilities(_storageProvider);
                 var userTable = tableAccess.GetTable("users");
 
-                var newUserEntity = new UserEntity(username, password);
+                var newUserEntity = new UserEntity(username, passwordPlain);
 
                 var insert = TableOperation.Insert(newUserEntity, true);
                 await userTable.ExecuteAsync(insert);
@@ -57,7 +57,6 @@ namespace PaprikaFunctionsApp.Common
             {
                 //Create a new user record
                 // and associate the existing grammar cache and blob with the new record
-
                 var userCreationResult = await CreateUserAsync(newUsername, newPassword);
                 if (!userCreationResult.Success)
                 {
@@ -66,10 +65,11 @@ namespace PaprikaFunctionsApp.Common
 
                 //Reassociate cache
                 var gc = new GrammarCache(_storageProvider);
-                gc.ReassociateCache(oldUsername, newUsername);
+                gc.CopyCache(oldUsername, newUsername);
 
                 //Reassociate blob
-
+                var gb = new GrammarBlob(_storageProvider);
+                await gb.CopyGrammar(oldUsername, newUsername);
             }
             catch (Exception ex)
             {

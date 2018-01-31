@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace PaprikaFunctionsApp.Common
 {
@@ -26,7 +27,7 @@ namespace PaprikaFunctionsApp.Common
             blob.UploadFromStreamAsync(memStream).Wait();
         }
 
-        public async System.Threading.Tasks.Task<string> ReadGrammarAsync(string username)
+        public async Task<string> ReadGrammarAsync(string username)
         {
             var blobAccess = new BlobUtilities(_storageProvider);
             var blob = blobAccess.GetBlockBlob(username);
@@ -36,6 +37,13 @@ namespace PaprikaFunctionsApp.Common
             var sr = new StreamReader(stream);
 
             return await sr.ReadToEndAsync();
+        }
+        
+        public async Task<string> CopyGrammar(string fromUser, string toUser)
+        {
+            var Grammar = await ReadGrammarAsync(fromUser);
+            WriteGrammar(toUser, Grammar);
+            return Grammar;
         }
     }
 }

@@ -43,6 +43,11 @@ namespace PaprikaFunctionsApp
             var users = new UserUtilities(_storageProvider);
             var renameUserResult = await users.RenameUserAsync(authorisation.Username, newUsername, newPassword);
 
+            if (!renameUserResult.Success)
+            {
+                return req.CreateResponse<string>(HttpStatusCode.InternalServerError, renameUserResult.Attachment);
+            }
+
             return req.CreateResponse<string>(HttpStatusCode.Created, "OK");
         }
     }
