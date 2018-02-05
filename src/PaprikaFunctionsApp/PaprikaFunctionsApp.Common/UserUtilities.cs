@@ -11,6 +11,7 @@ namespace PaprikaFunctionsApp.Common
     public class UserUtilities
     {
         private AzureStorageProvider _storageProvider;
+        const string USERS = "users";
 
         public UserUtilities(AzureStorageProvider storageProvider)
         {
@@ -25,21 +26,34 @@ namespace PaprikaFunctionsApp.Common
         public UserEntity GetUser(string username)
         {
             var tableAccess = new TableUtilities(_storageProvider);
-            var userTable = tableAccess.GetTable("users");
+            var userTable = tableAccess.GetTable(USERS);
             var query = new TableQuery<UserEntity>() { FilterString = TableQuery.GenerateFilterCondition("PartitionKey", "eq", username) };
             var results = userTable.ExecuteQuerySegmentedAsync(query, new TableContinuationToken()).Result;
             var user = results.FirstOrDefault();
             return user;
         }
 
-        public async Task<Status<string>> CreateUserAsync(string username, string passwordPlain)
+        public Status<UserEntity> UserExists(string username)
+        {
+            var theUser = GetUser(username);
+            if (theUser == null)
+            {
+                return new Status<UserEntity>(false);
+            }
+            else
+            {
+                return new Status<UserEntity>(true, theUser);
+            }
+        }
+
+        public async Task<Status<string>> CreateUserAsync(string username, string passwordPlain, bool isAnon)
         {
             try
             {
                 var tableAccess = new TableUtilities(_storageProvider);
-                var userTable = tableAccess.GetTable("users");
+                var userTable = tableAccess.GetTable(USERS);
 
-                var newUserEntity = new UserEntity(username, passwordPlain);
+                var newUserEntity = new UserEntity(username, passwordPlain, isAnon);
 
                 var insert = TableOperation.Insert(newUserEntity, true);
                 await userTable.ExecuteAsync(insert);
@@ -57,7 +71,7 @@ namespace PaprikaFunctionsApp.Common
             {
                 //Create a new user record
                 // and associate the existing grammar cache and blob with the new record
-                var userCreationResult = await CreateUserAsync(newUsername, newPassword);
+                var userCreationResult = await CreateUserAsync(newUsername, newPassword, false);
                 if (!userCreationResult.Success)
                 {
                     return userCreationResult;

@@ -40,7 +40,7 @@ namespace PaprikaFunctionsApp
             try
             {
                 var userAccess = new UserUtilities(_storageProvider);
-                var userCreationResult = await userAccess.CreateUserAsync(theName.Name, theName.Password);
+                var userCreationResult = await userAccess.CreateUserAsync(theName.Name, theName.Password, true);
 
                 if (!userCreationResult.Success)
                 {

@@ -12,7 +12,8 @@ namespace PaprikaFunctionsApp
     public class AuthenticationResponse
     {
         public string Username { get; set; }
-        
+        public UserEntity LoggedInUser { get; set; }
+
         public Status<HttpResponseMessage> Get(AzureStorageProvider storageProvider, [HttpTrigger]HttpRequestMessage req)
         {
             Username = "";
@@ -41,12 +42,12 @@ namespace PaprikaFunctionsApp
 
             //Get the user and check their auth
             var userUtils = new UserUtilities(storageProvider);
-            var user = userUtils.GetUser(Username);
+            var LoggedInUser = userUtils.GetUser(Username);
             bool isAuthed = false;
-            if (user != null)
+            if (LoggedInUser != null)
             {
-                var passwordSecured = CryptoKey.DeriveKey(plainPasswordString, user.RowKey);
-                isAuthed = passwordSecured == user.EncryptedPassword;
+                var passwordSecured = CryptoKey.DeriveKey(plainPasswordString, LoggedInUser.RowKey);
+                isAuthed = passwordSecured == LoggedInUser.EncryptedPassword;
             }
 
             //If either the user is null or the password was wrong, display the same message

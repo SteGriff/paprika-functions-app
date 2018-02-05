@@ -22,6 +22,10 @@
         url: this.baseUrl + '/api/Anon/New/',
         key: 'Z3KhN4CAzjiilXrgohxb7s24cRkgWslIYZmeS9oqliafaSlOgMQEpw==',
     }
+    this.upgradeAnonEndpoint = {
+        url: this.baseUrl + '/api/Anon/Upgrade/',
+        key: '',
+    }
     this.newUserEndpoint = {
         url: this.baseUrl + '/api/User/New/',
         key: '',
@@ -106,14 +110,7 @@
         this.loading(true);
         $.ajax(options);
     }
-
-    this.urlEncode = function (request)
-    {
-        var result = encodeURIComponent(request);
-        result = result.replace("#", "%23");
-        return result;
-    }
-
+    
     this.query = function (event) {
 
         var showQueryResultOnSuccess = function (response) {
@@ -158,10 +155,8 @@
         me.report(true, "Just a sec...", "I'm generating an anonymous test user for you to use");
 
         var useAnonData = function (response) {
-            //console.log("Use anon data", response);
             me.setUsername(response.Name);
             me.setPassword(response.Password);
-            //console.log("Get grammar...");
             me.getGrammar();
             me.report(true, "Done", "Go ahead, you're now " + response.Name);
         }
@@ -173,6 +168,36 @@
         $.ajax(options);
     }
 
+    this.upgradeAnon = function (event)
+    {
+        console.log("Upgrade Anon");
+
+        me.report(true, "Transformulating...", "I'm saving your new user account");
+
+        var newEmail = $('.js-new-email').val();
+        var newUsername = $('.js-new-username').val();
+        var newPassword = $('.js-new-password').val();
+
+        var usePermanentData = function (response) {
+            me.setUsername(newUsername);
+            me.setPassword(newPassword);
+            me.getGrammar();
+            me.report(true, "Done", "Go ahead, you're now " + newUsername);
+            page.closeDialog();
+        }
+
+        var options = this.getOptions(this.upgradeAnonEndpoint, usePermanentData);
+        options.data = JSON.stringify({ "newUsername" : newUsername, "newPassword" : newPassword });
+        options.contentType = "application/json";
+        options.method = 'POST';
+
+        this.loading(true);
+        $.ajax(options);
+
+        event.preventDefault();
+        return false;
+    }
+    
     this.loading = function (isOn, text) {
         var $loader = $('.js-loading');
         if (isOn) {

@@ -5,6 +5,19 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="res/tachyons.min.css" />
+    <style>
+        .translate-center {
+            transform: translate(-50%, -50%);
+        }
+
+        .t-50 {
+            top: 50%;
+        }
+
+        .l-50 {
+            left: 50%;
+        }
+    </style>
 </head>
 <body class="w-100 sans-serif">
     <header class="w-100 pa3 ph3-ns bg-white">
@@ -44,7 +57,15 @@
                             class="dib mv1 pa1 ph3 h2 w4
                             b--black-80 black-80 bg-white bw1 ba
                             b pointer">
-                        Set
+                        Login
+                    </button>
+
+                    <button type="button" onclick="page.openDialog()"
+                            class="js-upgrade-anon
+                            dib mv1 pa1 ph3 h2
+                            b--black-80 black-80 bg-white bw1 ba
+                            b pointer">
+                        Make into real account
                     </button>
                 </span>
             </div>
@@ -93,14 +114,80 @@
             </div>
         </div>
     </main>
+
+    <div class="js-overlay
+	    z-0
+	    bg-gray o-50
+	    fixed absolute--fill
+	    t-0 l-0
+	    dn"
+        onclick="page.closeDialog()">
+    </div>
+
+    <div class="js-modal
+		z-1
+		b--black-80 black-80 bg-white bw1 ba
+		fixed t-50 l-50 translate-center w-90 w-50-ns
+		ma2 pa1 ph3
+		dn">
+
+        <span class="fr f3 pointer" onclick="page.closeDialog()">&times;</span>
+
+        <div class="center pv2">
+            <form>
+                <fieldset class="ba b--transparent ph0 mh0">
+                    <legend class="f4 fw6">Sign Up</legend>
+                    <p class="">This will transform your temporary <span class="js-user-placeholder">User</span> account into a permanent account, saving all of your grammar changes. It's completely free!</p>
+                    <div class="mt3">
+                        <label class="db fw6 lh-copy f6" for="email-address">Email</label>
+                        <input class="js-new-email pa2 input-reset ba bg-transparent w-100"
+                               type="email" name="email-address" placeholder="person@example.com">
+                    </div>
+                    <div class="mt3">
+                        <label class="db fw6 lh-copy f6" for="email-address">Username</label>
+                        <input class="js-new-username pa2 input-reset ba bg-transparent w-100"
+                               type="text" name="new-username" placeholder="CoolUser5000">
+                    </div>
+                    <div class="mv3">
+                        <label class="db fw6 lh-copy f6" for="password">Password</label>
+                        <input class="js-new-password b pa2 input-reset ba bg-transparent w-100"
+                               type="password" name="password">
+                    </div>
+                </fieldset>
+                <div>
+                    <button class="b ph3 pv2 input-reset
+        				b--black-80 black-80 bg-white bw1 ba
+				        pointer dib"
+                        onclick="root.upgradeAnon(event)">
+                            Save as real account
+                        </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="res/jquery-2.2.4.min.js"></script>
     <script src="res/Paprika.js"></script>
     <script>
         var root;
+        var page;
         $(function () {
-            root = new Paprika();
+            root = new Paprika('http://localhost:7071/');
             root.loading(false);
+            page = new Page();
         });
+
+        var Page = function ()
+        {
+            this.openDialog = function () {
+                $('.js-overlay').show();
+                $('.js-modal').show();
+            }
+            this.closeDialog = function () {
+                $('.js-overlay').hide();
+                $('.js-modal').hide();
+            }
+        }
     </script>
 </body>
 </html>

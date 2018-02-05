@@ -33,6 +33,12 @@ namespace PaprikaFunctionsApp
 
             log.Info(string.Format("Incoming Resolve, q='{0}'", query));
 
+            if (string.IsNullOrEmpty(query))
+            {
+                log.Info("Query was empty - short circuiting to empty answer");
+                return req.CreateResponse(HttpStatusCode.OK, "", "text/plain");
+            }
+
             try
             {
                 _storageProvider = StorageProvider.GetStorageProvider();

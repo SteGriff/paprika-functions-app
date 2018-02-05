@@ -35,6 +35,12 @@ namespace PaprikaFunctionsApp
                 return authenticationStatus.Attachment;
             }
 
+            if (!authorisation.LoggedInUser.IsAnon)
+            {
+                // Do not allow this feature to be used to change the name of a permanent user
+                return req.CreateResponse(HttpStatusCode.BadRequest, "Name change not allowed");
+            }
+
             // Get new details from request body 
             dynamic data = await req.Content.ReadAsAsync<object>();
             string newUsername = data?.newUsername;

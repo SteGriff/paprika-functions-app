@@ -6,7 +6,7 @@ namespace PaprikaFunctionsApp.Common.Models
 {
     public class UserEntity : TableEntity
     {
-        public UserEntity(string username, string passwordPlain)
+        public UserEntity(string username, string passwordPlain, bool isAnon)
         {
             DateTime registrationDate = DateTime.Now;
             string passwordSecured = CryptoKey.DeriveKey(passwordPlain, registrationDate.ToString("O"));
@@ -21,5 +21,6 @@ namespace PaprikaFunctionsApp.Common.Models
 
         public DateTime RegistrationDate { get; set; }
         public string EncryptedPassword { get; set; }
+        public bool IsAnon { get; set; }
     }
 }
