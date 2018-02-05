@@ -15,6 +15,7 @@ namespace PaprikaFunctionsApp.Common.Models
             this.RowKey = registrationDate.ToIso8601();
             this.RegistrationDate = registrationDate;
             this.EncryptedPassword = passwordSecured;
+            this.IsAnon = isAnon;
         }
 
         public UserEntity() { }

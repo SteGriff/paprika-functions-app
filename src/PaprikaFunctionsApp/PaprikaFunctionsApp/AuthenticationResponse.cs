@@ -42,7 +42,7 @@ namespace PaprikaFunctionsApp
 
             //Get the user and check their auth
             var userUtils = new UserUtilities(storageProvider);
-            var LoggedInUser = userUtils.GetUser(Username);
+            LoggedInUser = userUtils.GetUser(Username);
             bool isAuthed = false;
             if (LoggedInUser != null)
             {

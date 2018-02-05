@@ -165,7 +165,7 @@ namespace PaprikaFunctionsApp.Migrations
                     Output("Default user password: '{0}' (save it now)", password);
                 }
 
-                var newUser = new UserEntity(name, password);
+                var newUser = new UserEntity(name, password, false);
                 var insert = TableOperation.Insert(newUser);
                 table.ExecuteAsync(insert).Wait();
             }
