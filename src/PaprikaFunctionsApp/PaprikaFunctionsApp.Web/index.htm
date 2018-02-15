@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE HTML>
-<html>
+<html ng-app="paprikaApp">
 <head>
     <title>Paprika</title>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -19,7 +19,7 @@
         }
     </style>
 </head>
-<body class="w-100 sans-serif">
+<body class="w-100 sans-serif" ng-controller="MainController">
     <header class="w-100 pa3 ph3-ns bg-white">
         <div class="db dt-ns mw9 center w-100">
             <div class="db dtc-ns v-mid tl">
@@ -45,22 +45,22 @@
                 </span>
 
                 <span>
-                    <input type="text" placeholder="username" class="js-username
+                    <input ng-model="username" type="text" placeholder="username" class="js-username
                            pa1 ph2 h2
                        b--black-60 black-80 bg-white bw1 ba"/>
 
-                    <input type="password" placeholder="password" class="js-password
+                    <input ng-model="password" type="password" placeholder="password" class="js-password
                            pa1 ph2 h2
                        b--black-60 black-80 bg-white bw1 ba"/>
 
-                    <button type="button" onclick="root.getGrammar()"
+                    <button type="button" ng-click="getGrammar()"
                             class="dib mv1 pa1 ph3 h2 w4
                             b--black-80 black-80 bg-white bw1 ba
                             b pointer">
                         Login
                     </button>
 
-                    <button type="button" onclick="page.openDialog()"
+                    <button type="button" ng-click="openDialog()"
                             class="js-upgrade-anon
                             dib mv1 pa1 ph3 h2
                             b--black-80 black-80 bg-white bw1 ba
@@ -73,6 +73,7 @@
     </header>
 
     <main class="w-100 bt b--black-10 bg-white">
+        <p ng-bind="username"></p>
         <div class="ph1 ph3-ns">
 
             <div class="w-100">
@@ -83,7 +84,7 @@
                        h2 w-90 ph1
                        b--black-60 black-80 bg-white bw1 ba">
 
-                    <button type="submit" onclick="root.query(event)"
+                    <button type="submit" ng-click="query(event)"
                             class="
                             h2
                             b--black-80 black-80 bg-white bw1 ba
@@ -94,17 +95,30 @@
             </div>
             
             <div class="w-100 w-40-ns fr-ns b--black-10 bl-ns pl2-ns">
-                <p class="f6 ttu">Results: <span class="js-loading bg-gray white pa1 br1">loading...</span></p>
-                <ul class="js-results lh-copy"></ul>
+                <p class="f6 ttu">
+                    Results:
+                    <span ng-show="isLoading" ng-bind="loadingText" class="js-loading bg-gray white pa1 br1">
+                        Loading...
+                    </span>
+                </p>
+                <ul class="js-results lh-copy">
+                    <li ng-repeat="report in reports">
+                        <span ng-class="['pa1', 'br1', {'bg-green' : success, 'bg-red': !success}]"
+                              ng-bind="report.status"></span>
+                        <code ng-bind="report.response"></code>
+                    </li>
+                </ul>
             </div>
 
             <div class="w-100 w-50-ns fl-ns">
                 <p class="f6 ttu">Your Grammar:</p>
-                <textarea class="js-grammar-text
+                <textarea
+                          ng-model="grammarText"
+                          class="js-grammar-text
                           w-100 h5 pa2
                           b--black-60 black-80 bg-white bw1 ba mw-100"></textarea>
                 <div>
-                    <button type="button" onclick="root.uploadText()"
+                    <button type="button" ng-click="uploadText()"
                             class="mv1 pa1 ph3 w-100
                             b--black-80 black-80 bg-white bw1 ba
                             b pointer">
@@ -119,19 +133,19 @@
 	    z-0
 	    bg-gray o-50
 	    fixed absolute--fill
-	    t-0 l-0
-	    dn"
-        onclick="page.closeDialog()">
+	    t-0 l-0"
+        ng-show="showModal"
+        ng-click="closeDialog()">
     </div>
 
     <div class="js-modal
 		z-1
 		b--black-80 black-80 bg-white bw1 ba
 		fixed t-50 l-50 translate-center w-90 w-50-ns
-		ma2 pa1 ph3
-		dn">
+		ma2 pa1 ph3"
+        ng-show="showModal">
 
-        <span class="fr f3 pointer" onclick="page.closeDialog()">&times;</span>
+        <span class="fr f3 pointer" ng-click="closeDialog()">&times;</span>
 
         <div class="center pv2">
             <form>
@@ -141,16 +155,19 @@
                     <div class="mt3">
                         <label class="db fw6 lh-copy f6" for="email-address">Email</label>
                         <input class="js-new-email pa2 input-reset ba bg-transparent w-100"
+                               ng-model="newEmail"
                                type="email" name="email-address" placeholder="person@example.com">
                     </div>
                     <div class="mt3">
-                        <label class="db fw6 lh-copy f6" for="email-address">Username</label>
+                        <label class="db fw6 lh-copy f6" for="email-address">New Username</label>
                         <input class="js-new-username pa2 input-reset ba bg-transparent w-100"
-                               type="text" name="new-username" placeholder="CoolUser5000">
+                               ng-model="newUsername"
+                               type="text" name="new-username" placeholder="New username">
                     </div>
                     <div class="mv3">
-                        <label class="db fw6 lh-copy f6" for="password">Password</label>
+                        <label class="db fw6 lh-copy f6" for="password">New Password</label>
                         <input class="js-new-password b pa2 input-reset ba bg-transparent w-100"
+                               ng-model="newPassword"
                                type="password" name="password">
                     </div>
                 </fieldset>
@@ -158,7 +175,7 @@
                     <button class="b ph3 pv2 input-reset
         				b--black-80 black-80 bg-white bw1 ba
 				        pointer dib"
-                        onclick="root.upgradeAnon(event)">
+                        ng-click="upgradeAnon(event)">
                             Save as real account
                         </button>
                 </div>
@@ -166,28 +183,30 @@
         </div>
     </div>
 
+    <script src="res/angular.js"></script>
     <script src="res/jquery-2.2.4.min.js"></script>
-    <script src="res/Paprika.js"></script>
+    <script src="res/paprikaApp.js"></script>
+    <!--<script src="res/Paprika.js"></script>-->
     <script>
-        var root;
-        var page;
-        $(function () {
-            root = new Paprika('http://localhost:7071/');
-            root.loading(false);
-            page = new Page();
-        });
+        //var root;
+        //var page;
+        //$(function () {
+        //    root = new Paprika('http://localhost:7071/');
+        //    root.loading(false);
+        //    page = new Page();
+        //});
 
-        var Page = function ()
-        {
-            this.openDialog = function () {
-                $('.js-overlay').show();
-                $('.js-modal').show();
-            }
-            this.closeDialog = function () {
-                $('.js-overlay').hide();
-                $('.js-modal').hide();
-            }
-        }
+        //var Page = function ()
+        //{
+        //    this.openDialog = function () {
+        //        $('.js-overlay').show();
+        //        $('.js-modal').show();
+        //    }
+        //    this.closeDialog = function () {
+        //        $('.js-overlay').hide();
+        //        $('.js-modal').hide();
+        //    }
+        //}
     </script>
 </body>
 </html>
