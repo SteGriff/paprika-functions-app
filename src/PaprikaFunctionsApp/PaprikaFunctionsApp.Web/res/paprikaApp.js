@@ -64,32 +64,34 @@ paprikaApp.controller('MainController', ['$scope', '$http', function($scope, $ht
     
     $scope.getOptions = function (endpoint, successCallback, errorCallback) {
 
+        var appendTransformation = function (defaults, transormation)
+        {
+            // Can't guarantee that default transformation is an array
+            defaults = angular.isArray(defaults) ? defaults : [defaults];
+            // Append the new transformation to the defaults
+            return defaults.concat(transform);
+        }
+
+        var addHeadersTransformation = function (request)
+        {
+            request.setRequestHeader('username', $scope.username);
+            request.setRequestHeader('password', $scope.password);
+            request.setRequestHeader('x-functions-key', endpoint.key);
+        }
+
         return {
-            beforeSend: function (request) {
-                request.setRequestHeader('username', $scope.username);
-                request.setRequestHeader('password', $scope.password);
-                request.setRequestHeader('x-functions-key', endpoint.key);
-            },
+            transformResponse: appendTransformation($http.defaults.transformResponse, addHeadersTransformation),
             url: endpoint.url,
             cache: false,
-            contentType: false,
-            processData: false,
-            method: 'POST',
-            success: function onSuccess(response, statusWord, xhr) {
-                if (typeof successCallback === 'function') {
-                    successCallback(response);
-                }
-            },
-            error: function onError(xhr, statusWord, response) {
-                $scope.report(false, xhr.statusText, xhr.responseText);
-                if (typeof errorCallback === 'function') {
-                    errorCallback(response);
-                }
-            },
-            complete: function onResponse(data) {
-                $scope.loading(false);
-            }
+            method: 'POST'
         }
+    }
+
+    $scope.webRequest = function (options, onSuccess, onError) {
+        $scope.loading(true);
+        $http(options)
+            .then(onSuccess, onError)
+            .finally(function () { $scope.loading(false) });
     }
 
     $scope.uploadFile = function () {
@@ -102,18 +104,16 @@ paprikaApp.controller('MainController', ['$scope', '$http', function($scope, $ht
         options.data = data;
         options.method = 'POST';
 
-        $scope.loading(true);
-        $.ajax(options);
+        $scope.webRequest(options);
     }
 
     $scope.grammarText;
     $scope.uploadText = function () {
         var options = $scope.getOptions($scope.uploadTextEndpoint);
-        options.data = $scope.grammarText;;
+        options.data = $scope.grammarText;
         options.method = 'POST';
 
-        $scope.loading(true);
-        $.ajax(options);
+        $scope.webRequest(options);
     }
 
     $scope.query = function (event) {
@@ -134,8 +134,7 @@ paprikaApp.controller('MainController', ['$scope', '$http', function($scope, $ht
         options.contentType = "application/json";
         options.method = 'POST';
 
-        $scope.loading(true);
-        $.ajax(options);
+        $scope.webRequest(options);
 
         event.preventDefault();
         return false;
@@ -150,8 +149,7 @@ paprikaApp.controller('MainController', ['$scope', '$http', function($scope, $ht
         var options = $scope.getOptions($scope.getGrammarEndpoint, populateGrammarOnSuccess);
         options.method = 'GET';
 
-        $scope.loading(true);
-        $.ajax(options);
+        $scope.webRequest(options);
     }
 
     $scope.createAnon = function () {
@@ -169,8 +167,7 @@ paprikaApp.controller('MainController', ['$scope', '$http', function($scope, $ht
         var options = $scope.getOptions($scope.newAnonEndpoint, useAnonData);
         options.method = 'POST';
 
-        $scope.loading(true);
-        $.ajax(options);
+        $scope.webRequest(options);
     }
 
     $scope.upgradeAnon = function (event) {
@@ -191,8 +188,7 @@ paprikaApp.controller('MainController', ['$scope', '$http', function($scope, $ht
         options.contentType = "application/json";
         options.method = 'POST';
 
-        $scope.loading(true);
-        $.ajax(options);
+        $scope.webRequest(options);
 
         event.preventDefault();
         return false;
