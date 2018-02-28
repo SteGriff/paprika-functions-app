@@ -60,7 +60,7 @@
                         Login
                     </button>
 
-                    <button type="button" ng-click="openDialog()"
+                    <button type="button" ng-show="isAnon" ng-click="openDialog()"
                             class="js-upgrade-anon
                             dib mv1 pa1 ph3 h2
                             b--black-80 black-80 bg-white bw1 ba
@@ -73,18 +73,17 @@
     </header>
 
     <main class="w-100 bt b--black-10 bg-white">
-        <p ng-bind="username"></p>
         <div class="ph1 ph3-ns">
 
             <div class="w-100">
 
                 <p><label for="query" class="f6 ttu">Paprika Query:</label></p>
                 <form>
-                    <input name="query" id="query" type="text" class="js-query
+                    <input name="query" id="query" type="text" ng-model="query" class="js-query
                        h2 w-90 ph1
                        b--black-60 black-80 bg-white bw1 ba">
 
-                    <button type="submit" ng-click="query(event)"
+                    <button type="submit" ng-click="doQuery(event)"
                             class="
                             h2
                             b--black-80 black-80 bg-white bw1 ba
@@ -102,10 +101,12 @@
                     </span>
                 </p>
                 <ul class="js-results lh-copy">
-                    <li ng-repeat="report in reports">
-                        <span ng-class="['pa1', 'br1', {'bg-green' : success, 'bg-red': !success}]"
+                    <li ng-repeat="report in reports | orderBy:'':true" ng-class="{'b' : report.answer}">
+                        <span ng-show="(!report.answer)"
+                              ng-class="['pa1', 'br1', {'bg-green' : report.success, 'bg-red': (!report.success)}]"
                               ng-bind="report.status"></span>
-                        <code ng-bind="report.response"></code>
+                        <code ng-show="(!report.answer)" ng-bind="report.response"></code>
+                        <span ng-show="report.answer" ng-bind="report.answer"></span>
                     </li>
                 </ul>
             </div>
@@ -186,27 +187,7 @@
     <script src="res/angular.js"></script>
     <script src="res/jquery-2.2.4.min.js"></script>
     <script src="res/paprikaApp.js"></script>
-    <!--<script src="res/Paprika.js"></script>-->
     <script>
-        //var root;
-        //var page;
-        //$(function () {
-        //    root = new Paprika('http://localhost:7071/');
-        //    root.loading(false);
-        //    page = new Page();
-        //});
-
-        //var Page = function ()
-        //{
-        //    this.openDialog = function () {
-        //        $('.js-overlay').show();
-        //        $('.js-modal').show();
-        //    }
-        //    this.closeDialog = function () {
-        //        $('.js-overlay').hide();
-        //        $('.js-modal').hide();
-        //    }
-        //}
     </script>
 </body>
 </html>

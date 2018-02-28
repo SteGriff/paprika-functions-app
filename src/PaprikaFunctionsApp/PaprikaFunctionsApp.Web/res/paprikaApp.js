@@ -2,24 +2,6 @@ var paprikaApp = angular.module('paprikaApp',[]);
 
 paprikaApp.controller('MainController', ['$scope', '$http', function($scope, $http) {
 
-/*
-	$scope.message = "";
-	$scope.newButtonText = "";
-	$scope.buttons = ["Thanks", "OK", "Bye", "ðŸ˜€"];
-	
-	$scope.addChat = function(segment){
-		$scope.message += " " + segment;
-	}
-	
-	$scope.addButton = function(){
-		
-		if ($scope.newButtonText)
-		{
-			$scope.buttons.push($scope.newButtonText);
-		}
-	}
-    */
-
     $scope.baseUrl = "";
     $scope.baseUrl = "http://localhost:7071/";
 
@@ -52,35 +34,31 @@ paprikaApp.controller('MainController', ['$scope', '$http', function($scope, $ht
         key: '',
     }
 
+    //Set by DOM:
     //$scope.username;
     //$scope.password;
+    //$scope.isAnon;
 
     $scope.showModal = false;
+    $scope.openDialog = function () { $scope.showModal = true; }
+    $scope.closeDialog = function () { $scope.showModal = false; }
 
     $scope.reports = [];
     $scope.report = function (success, status, response) {
         $scope.reports.push({ "success": success, "status": status, "response": response });
     }
+    $scope.answer = function (text)
+    {
+        $scope.reports.push({ "answer": text });
+    }
     
     $scope.getOptions = function (endpoint, successCallback, errorCallback) {
-
-        var appendTransformation = function (defaults, transormation)
-        {
-            // Can't guarantee that default transformation is an array
-            defaults = angular.isArray(defaults) ? defaults : [defaults];
-            // Append the new transformation to the defaults
-            return defaults.concat(transform);
-        }
-
-        var addHeadersTransformation = function (request)
-        {
-            request.setRequestHeader('username', $scope.username);
-            request.setRequestHeader('password', $scope.password);
-            request.setRequestHeader('x-functions-key', endpoint.key);
-        }
-
         return {
-            transformResponse: appendTransformation($http.defaults.transformResponse, addHeadersTransformation),
+            headers: {
+                'username': $scope.username,
+                'password': $scope.password,
+                'x-functions-key': endpoint.key
+            },
             url: endpoint.url,
             cache: false,
             method: 'POST'
@@ -111,30 +89,21 @@ paprikaApp.controller('MainController', ['$scope', '$http', function($scope, $ht
     $scope.uploadText = function () {
         var options = $scope.getOptions($scope.uploadTextEndpoint);
         options.data = $scope.grammarText;
-        options.method = 'POST';
 
         $scope.webRequest(options);
     }
 
-    $scope.query = function (event) {
+    $scope.doQuery = function (event) {
 
         var showQueryResultOnSuccess = function (response) {
-            newLine = function (response) {
-                return "<li class='b'>" + response + "</li>"
-            }
-
-            $('.js-results').prepend(newLine(response));
+            $scope.answer(response.data);
         }
 
-        var query = $('.js-query').val();
+        var options = $scope.getOptions($scope.resolveEndpoint);
+        options.data = { "query": $scope.query };
+        //options.contentType = "application/json";
 
-        var options = $scope.getOptions($scope.resolveEndpoint, showQueryResultOnSuccess);
-        options.url = $scope.resolveEndpoint.url
-        options.data = JSON.stringify({ "query": query });
-        options.contentType = "application/json";
-        options.method = 'POST';
-
-        $scope.webRequest(options);
+        $scope.webRequest(options, showQueryResultOnSuccess);
 
         event.preventDefault();
         return false;
@@ -143,13 +112,18 @@ paprikaApp.controller('MainController', ['$scope', '$http', function($scope, $ht
     $scope.getGrammar = function () {
 
         var populateGrammarOnSuccess = function (response) {
-            $('.js-grammar-text').val(response);
+            $scope.grammarText = response.data;
         }
 
-        var options = $scope.getOptions($scope.getGrammarEndpoint, populateGrammarOnSuccess);
+        var complain = function ()
+        {
+            $scope.report(false, "Error", "Couldn't get your grammar, try again")
+        }
+
+        var options = $scope.getOptions($scope.getGrammarEndpoint);
         options.method = 'GET';
 
-        $scope.webRequest(options);
+        $scope.webRequest(options, populateGrammarOnSuccess, complain);
     }
 
     $scope.createAnon = function () {
@@ -158,16 +132,22 @@ paprikaApp.controller('MainController', ['$scope', '$http', function($scope, $ht
         $scope.report(true, "Just a sec...", "I'm generating an anonymous test user for you to use");
 
         var useAnonData = function (response) {
-            $scope.username = response.Name;
-            $scope.password = response.Password;
+            console.log(response);
+            $scope.username = response.data.Name;
+            $scope.password = response.data.Password;
+            $scope.isAnon = true;
             $scope.getGrammar();
-            $scope.report(true, "Done", "Go ahead, you're now " + response.Name);
+            $scope.report(true, "Done", "Go ahead, you're now " + response.data.Name);
         }
 
-        var options = $scope.getOptions($scope.newAnonEndpoint, useAnonData);
-        options.method = 'POST';
+        var complain = function ()
+        {
+            $scope.report(false, "Oops", "I failed to generate an anon user for you... try refreshing the page");
+        }
 
-        $scope.webRequest(options);
+        var options = $scope.getOptions($scope.newAnonEndpoint);
+
+        $scope.webRequest(options, useAnonData, complain);
     }
 
     $scope.upgradeAnon = function (event) {
@@ -178,17 +158,17 @@ paprikaApp.controller('MainController', ['$scope', '$http', function($scope, $ht
         var usePermanentData = function (response) {
             $scope.username = $scope.newUsername;
             $scope.password = $scope.newPassword;
+            $scope.isAnon = false;
             $scope.getGrammar();
             $scope.report(true, "Done", "Go ahead, you're now " + $scope.newUsername);
-            page.closeDialog();
+            $scope.closeDialog();
         }
 
-        var options = $scope.getOptions($scope.upgradeAnonEndpoint, usePermanentData);
+        var options = $scope.getOptions($scope.upgradeAnonEndpoint);
         options.data = JSON.stringify({ "newUsername": $scope.newUsername, "newPassword": $scope.newPassword });
-        options.contentType = "application/json";
-        options.method = 'POST';
+        //options.contentType = "application/json";
 
-        $scope.webRequest(options);
+        $scope.webRequest(options, usePermanentData);
 
         event.preventDefault();
         return false;
