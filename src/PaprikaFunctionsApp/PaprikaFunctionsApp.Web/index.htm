@@ -6,16 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="res/tachyons.min.css" />
     <style>
-        .translate-center {
-            transform: translate(-50%, -50%);
+        .translate-center { transform: translate(-50%, -50%); }
+        .t-50 { top: 50%; }
+        .l-50 { left: 50%; }
+        .bg-rainbow {
+            background: linear-gradient(124deg, #ff2400, #e81d1d, #e8b71d, #e3e81d, #1de840, #1ddde8, #2b1de8, #dd00f3, #dd00f3);
+            background-size: 1800% 1800%;
+            animation: rainbow 9s linear infinite;
         }
-
-        .t-50 {
-            top: 50%;
+        @keyframes rainbow {
+            0% { background-position: 0% 82% }
+            50% { background-position: 100% 19% }
+            100% { background-position: 0% 82% }
         }
-
-        .l-50 {
-            left: 50%;
+        .max-height {
+            max-height: 12rem;
+        }
+        [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+            display: none !important;
         }
     </style>
 </head>
@@ -29,6 +37,12 @@
                 <a href="/" class="dib f5 f4-ns fw6 mt0 mb1 link black-70" title="Home">
                     Paprika
                 </a>
+                <button type="button" ng-click="startTutorial()" ng-show="!tutorialOpen"
+                        class="dib ml1 pa1 ph3 h2 w4
+                            b--black-80 black-80 bg-rainbow bw1 ba
+                            b pointer">
+                    Tutorial!
+                </button>
             </div>
             <div class="db dtc-ns v-mid tl tr-ns mt2 mt0-ns">
                 <!--<a title="Documentation" href="/docs/"
@@ -83,7 +97,7 @@
                        h2 w-90 ph1
                        b--black-60 black-80 bg-white bw1 ba">
 
-                    <button type="submit" ng-click="doQuery(event)"
+                    <button type="submit" ng-click="doQuery()"
                             class="
                             h2
                             b--black-80 black-80 bg-white bw1 ba
@@ -95,20 +109,55 @@
             
             <div class="w-100 w-40-ns fr-ns b--black-10 bl-ns pl2-ns">
                 <p class="f6 ttu">
-                    Results:
+                    Results
+                    (<span ng-click="clearResults()" class="f6 underline pointer ttu">Clear</span>):
                     <span ng-show="isLoading" ng-bind="loadingText" class="js-loading bg-gray white pa1 br1">
                         Loading...
                     </span>
+                    
                 </p>
-                <ul class="js-results lh-copy">
+                <ul class="lh-copy overflow-y-scroll max-height">
                     <li ng-repeat="report in reports | orderBy:'':true" ng-class="{'b' : report.answer}">
                         <span ng-show="(!report.answer)"
                               ng-class="['pa1', 'br1', {'bg-green' : report.success, 'bg-red': (!report.success)}]"
                               ng-bind="report.status"></span>
                         <code ng-show="(!report.answer)" ng-bind="report.response"></code>
-                        <span ng-show="report.answer" ng-bind="report.answer"></span>
+                        <span ng-show="report.answer"
+                              ng-bind="report.answer"></span>
                     </li>
                 </ul>
+
+                <div ng-show="tutorialOpen">
+                    <p class="f6 ttu">
+                        Tutorial
+                    </p>
+
+                    <p>
+                        <span ng-repeat="tutorial in tutorials">
+                            <span ng-bind="progressIcon($index)"></span>
+                        </span>
+                    </p>
+
+                    <p class="f5 b" ng-bind="tutorials[tutorialStep].title"></p>
+
+                    <p><small>Click:</small> <code class="pointer pa2 bg-blue white br2" ng-click="useExample()" ng-bind="tutorials[tutorialStep].input"></code></p>
+                    <p><small>Example output: "<span ng-bind="tutorials[tutorialStep].produces"></span>"</small></p>
+                    <p ng-show="tutorials[tutorialStep].notes"><small ng-bind="tutorials[tutorialStep].notes"></small></p>
+
+                    <button type="button" ng-enabled="tutorialStep > 0" ng-click="prevStep()"
+                            class="dib mv1 pa1 ph3 h2 w4
+                            b--black-80 black-80 bg-white bw1 ba
+                            b pointer">
+                        Prev
+                    </button>
+                    <button type="button" ng-enabled="tutorialStep < tutorials.length" ng-click="nextStep()"
+                            class="dib mv1 pa1 ph3 h2 w4
+                            b--black-80 black-80 bg-white bw1 ba
+                            b pointer">
+                        Next
+                    </button>
+                </div>
+
             </div>
 
             <div class="w-100 w-50-ns fl-ns">
@@ -136,7 +185,8 @@
 	    fixed absolute--fill
 	    t-0 l-0"
         ng-show="showModal"
-        ng-click="closeDialog()">
+        ng-click="closeDialog()"
+        ng-cloak>
     </div>
 
     <div class="js-modal
@@ -144,7 +194,8 @@
 		b--black-80 black-80 bg-white bw1 ba
 		fixed t-50 l-50 translate-center w-90 w-50-ns
 		ma2 pa1 ph3"
-        ng-show="showModal">
+        ng-show="showModal"
+        ng-cloak>
 
         <span class="fr f3 pointer" ng-click="closeDialog()">&times;</span>
 

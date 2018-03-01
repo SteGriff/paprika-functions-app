@@ -1,6 +1,6 @@
-var paprikaApp = angular.module('paprikaApp',[]);
+﻿var paprikaApp = angular.module('paprikaApp', []);
 
-paprikaApp.controller('MainController', ['$scope', '$http', function($scope, $http) {
+paprikaApp.controller('MainController', ['$scope', '$http', function ($scope, $http) {
 
     $scope.baseUrl = "";
     $scope.baseUrl = "http://localhost:7071/";
@@ -27,17 +27,81 @@ paprikaApp.controller('MainController', ['$scope', '$http', function($scope, $ht
     }
     $scope.upgradeAnonEndpoint = {
         url: $scope.baseUrl + '/api/Anon/Upgrade/',
-        key: '',
-    }
-    $scope.newUserEndpoint = {
-        url: $scope.baseUrl + '/api/User/New/',
-        key: '',
+        key: 'hCRr9w3QhRbUqbQguaXzpZl1buJkMm2srnTmuaEbf1C4RsxpCSUHQA==',
     }
 
     //Set by DOM:
     //$scope.username;
     //$scope.password;
     //$scope.isAnon;
+
+    $scope.tutorials = [
+        {
+            "title": "Basic lookup of simple tags",
+            "produces": "what a neat red dog",
+            "input": "what a [cool] [colour] [animal]",
+        },
+        {
+            "title": "Repeated tags get the same value every time:",
+            "produces": "wolf!! wolf in the library!!",
+            "input": "[animal]!! [animal] in [place]!!",
+        },
+        {
+            "title": "You can re-roll for a different word using hashtags at the end of a tag but they're not guaranteed to be different results",
+            "produces": "yellow bear, grey lion",
+            "input": "[colour#1] [animal#1], [colour#2] [animal#2]",
+        },
+        {
+            "title": "The hashtags can be anything you want to use to distinguish the tags",
+            "produces": "from the park to school",
+            "input": "from [place#from] to [place#to]",
+        },
+        {
+            "title": "You can nest tags as long as the inside-bit has already been resolved",
+            "produces": "my lion controls the weather",
+            "input": "my [animal] [does] [[does] thing]",
+            "notes": "After round 1: 'my lion controls [controls thing]' then finally: 'my lion controls the weather'",
+        },
+        {
+            "title": "To fix that, you can do an 'early' lookup and make it invisible using the ! command:",
+            "produces": "pig is an animal",
+            "input": "[!thing][[thing]] is [a] [thing]",
+            "notes": "Note that putting [a] or [an] in brackets is magic; it will be replaced with the correct article (a/an) when resolved",
+        },
+        {
+            "title": "Another nested example",
+            "produces": "Choose an animal. Choose mouse",
+            "input": "Choose [a] [thing]. Choose [[thing]]",
+        },
+        {
+            "title": "If you put a slash in a tag, it won't look it up, but will pick from the options",
+            "produces": "this day can't get any better",
+            "input": "[my/this] day [could/can't] get any [worse/better]",
+        },
+        {
+            "title": "You can make a word fully optional using the slash",
+            "produces": "how about them apples, eh?",
+            "input": "[/so, ]how about [those/them] [apples/oranges][, huh/, eh/]?"
+        }
+    ];
+
+    $scope.tutorialStep = 0;
+    $scope.tutorialOpen = false;
+    $scope.progressIcon = function (index)
+    {
+        return index <= $scope.tutorialStep ? "✅" : "◼";
+    }
+    $scope.nextStep = function () { if ($scope.tutorialStep < $scope.tutorials.length - 1) { $scope.tutorialStep++ } }
+    $scope.prevStep = function () { if ($scope.tutorialStep > 0) { $scope.tutorialStep-- } }
+    $scope.useExample = function () {
+        $scope.query = $scope.tutorials[$scope.tutorialStep].input;
+        $scope.doQuery();
+    }
+    $scope.startTutorial = function ()
+    {
+        $scope.tutorialStep = 0;
+        $scope.tutorialOpen = true;
+    }
 
     $scope.showModal = false;
     $scope.openDialog = function () { $scope.showModal = true; }
@@ -47,11 +111,13 @@ paprikaApp.controller('MainController', ['$scope', '$http', function($scope, $ht
     $scope.report = function (success, status, response) {
         $scope.reports.push({ "success": success, "status": status, "response": response });
     }
-    $scope.answer = function (text)
-    {
+    $scope.answer = function (text) {
         $scope.reports.push({ "answer": text });
     }
-    
+    $scope.clearResults = function () {
+        $scope.reports = [];
+    }
+
     $scope.getOptions = function (endpoint, successCallback, errorCallback) {
         return {
             headers: {
@@ -72,40 +138,33 @@ paprikaApp.controller('MainController', ['$scope', '$http', function($scope, $ht
             .finally(function () { $scope.loading(false) });
     }
 
-    $scope.uploadFile = function () {
-        var data = new FormData();
-        $.each($('.js-file')[0].files, function (i, file) {
-            data.append('file-' + i, file);
-        });
-
-        var options = $scope.getOptions($scope.uploadFileEndpoint);
-        options.data = data;
-        options.method = 'POST';
-
-        $scope.webRequest(options);
-    }
-
     $scope.grammarText;
     $scope.uploadText = function () {
+
+        var saved = function () { $scope.report(true, "Saved", "Grammar saved"); }
+        var failed = function () { $scope.report(true, "Error", "Failed to save grammar - try again or back it up to a local text file!"); }
+
         var options = $scope.getOptions($scope.uploadTextEndpoint);
         options.data = $scope.grammarText;
 
-        $scope.webRequest(options);
+        $scope.webRequest(options, saved, failed);
     }
 
-    $scope.doQuery = function (event) {
+    $scope.doQuery = function () {
 
         var showQueryResultOnSuccess = function (response) {
             $scope.answer(response.data);
         }
 
+        var complain = function (response) {
+            $scope.report(false, "Paprika Error", response.data);
+        }
+
         var options = $scope.getOptions($scope.resolveEndpoint);
         options.data = { "query": $scope.query };
-        //options.contentType = "application/json";
 
-        $scope.webRequest(options, showQueryResultOnSuccess);
+        $scope.webRequest(options, showQueryResultOnSuccess, complain);
 
-        event.preventDefault();
         return false;
     }
 
@@ -113,11 +172,13 @@ paprikaApp.controller('MainController', ['$scope', '$http', function($scope, $ht
 
         var populateGrammarOnSuccess = function (response) {
             $scope.grammarText = response.data;
+            //Hack to check if user is Anon
+            $scope.isAnon = ($scope.username.lastIndexOf("User", 0) === 0);
+            $scope.report(true, "Loaded", "Got grammar for " + $scope.username);
         }
 
-        var complain = function ()
-        {
-            $scope.report(false, "Error", "Couldn't get your grammar, try again")
+        var complain = function () {
+            $scope.report(false, "Error", "Couldn't get your grammar, try again");
         }
 
         var options = $scope.getOptions($scope.getGrammarEndpoint);
@@ -140,8 +201,7 @@ paprikaApp.controller('MainController', ['$scope', '$http', function($scope, $ht
             $scope.report(true, "Done", "Go ahead, you're now " + response.data.Name);
         }
 
-        var complain = function ()
-        {
+        var complain = function () {
             $scope.report(false, "Oops", "I failed to generate an anon user for you... try refreshing the page");
         }
 
@@ -165,8 +225,7 @@ paprikaApp.controller('MainController', ['$scope', '$http', function($scope, $ht
         }
 
         var options = $scope.getOptions($scope.upgradeAnonEndpoint);
-        options.data = JSON.stringify({ "newUsername": $scope.newUsername, "newPassword": $scope.newPassword });
-        //options.contentType = "application/json";
+        options.data = { "newUsername": $scope.newUsername, "newPassword": $scope.newPassword };
 
         $scope.webRequest(options, usePermanentData);
 

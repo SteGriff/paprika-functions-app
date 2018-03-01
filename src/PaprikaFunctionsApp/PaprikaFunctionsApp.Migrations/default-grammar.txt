@@ -1,83 +1,25 @@
 # Welcome to Paprika!
-# This is a comment, the line starts with a hash
+# These lines are ignored because they starts with a hash
+# (That makes them comments) Keep scrolling down to learn...
 
-# Categories start with an asterisk.
-# Here is a master "sentence" category which will make use of 
-# the other tags to create varying quips:
-
-* sentence
-
-# Basic lookup of simple tags (scroll down to find the sources)
-# "what a neat red dog"
-what a [cool] [colour] [animal]
-
-# Repeated tags get the same value every time:
-# "wolf!! wolf in the library!!"
-[animal]!! [animal] in [place]!!
-
-# You can re-roll for a different word using hashtags at the end of a tag
-# But they're not guaranteed to be different results
-# "yellow bear, grey lion"
-[colour#1] [animal#1], [colour#2] [animal#2]
-# "from the park to school"
-from [place#from] to [place#to]
-
-# You can nest tags as long as the inside-bit has already been resolved
-# E.g. Round 1: "my lion controls [controls thing]"
-# then finally: "my lion controls the weather"
-my [animal] [does] [[does] thing]
-
-# To relax this rule, you can do an "early" lookup
-# and make it invisible using the ! command:
-# "pig is an animal"
-[!thing][[thing]] is [a] [thing]
-
-# Note that putting [a] or [an] in brackets is magic;
-# It will be replaced with the correct article (a/an) when resolved
-
-# Another nested example:
-# "Choose an animal. Choose mouse"
-Choose [a] [thing]. Choose [[thing]]
-
-# If you put a slash in a tag, it won't look it up, but will pick from the options
-[my/this] day [could/can't] get any [worse/better]
-
-# You can make a word fully optional using the slash
-[/so, ]how about [those/them] [apples/oranges][, huh/, eh/]?
-
-
-# Ok, now let's define some other categories to look up from:
-# A basic word list
+# Here are some 'Categories' which are just basic word lists
+# To use them, type into the "Query" field: Hey, [cool] [animal]
+# Try the tutorial!
 
 * cool
 cool
 sweet
 neat
+groovy
 
-* thing
-animal
-colour
-place
-
-# Any category can look up from any other category
-# Definitions can be as simple or as complex as you want
 * animal
-[farm animal]
-[domestic animal]
-[wild animal]
-
-* farm animal
 horse
 sheep
 pig
 goat
-
-* domestic animal
 cat
 dog
 mouse
-
-* wild animal
 bear
 wolf
 lion
@@ -91,8 +33,13 @@ beige
 mauve
 grey
 
-# Place and The Place - it's useful to separate these out,
-# to use them in different contexts (see [runs thing])
+* thing
+animal
+colour
+place
+
+# Categories can contain anything a query does
+
 * place
 [the place]
 school
