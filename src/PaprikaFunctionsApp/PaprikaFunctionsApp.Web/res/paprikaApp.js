@@ -3,7 +3,7 @@
 paprikaApp.controller('MainController', ['$scope', '$http', function ($scope, $http) {
 
     $scope.baseUrl = "";
-    $scope.baseUrl = "http://localhost:7071/";
+    //$scope.baseUrl = "http://localhost:7071/";
 
     $scope.uploadFileEndpoint = {
         url: $scope.baseUrl + '/api/Grammar/UploadFile/',
