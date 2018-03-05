@@ -1,17 +1,23 @@
 ﻿{
     "$schema": "http://json.schemastore.org/proxies",
-  "proxies": {
-    "paprikaweb": {
-      "matchCondition": {
-        "route": "/"
+    "proxies": {
+        "paprikaweb": {
+            "matchCondition": {
+                "route": "/"
+            },
+            "backendUri": "https://paprika-web.azurewebsites.net"
+        },
+      "paprikawebresources": {
+        "matchCondition": {
+          "route": "/res/{*file}"
+        },
+        "backendUri": "https://paprika-web.azurewebsites.net/res/{file}"
       },
-      "backendUri": "https://paprika-web.azurewebsites.net"
-    },
-    "paprikawebresources": {
-      "matchCondition": {
-        "route": "/res/{*file}"
-      },
-      "backendUri": "https://paprika-web.azurewebsites.net/res/{file}"
+        "acme-challenge": {
+            "matchCondition": {
+                "route": "/.well-known/acme-challenge/{*rest}"
+            },
+            "backendUri": "https://%WEBSITE_HOSTNAME%/api/LetsEncrypt/{rest}"
+        }
     }
-  }
 }
