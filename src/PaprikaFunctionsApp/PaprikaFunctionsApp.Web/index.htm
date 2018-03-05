@@ -74,7 +74,7 @@
                         Login
                     </button>
 
-                    <button type="button" ng-show="isAnon" ng-click="openDialog()"
+                    <button type="button" ng-cloak ng-show="isAnon" ng-click="openDialog()"
                             class="js-upgrade-anon
                             dib mv1 pa1 ph3 h2
                             b--black-80 black-80 bg-white bw1 ba
@@ -127,7 +127,7 @@
                     </li>
                 </ul>
 
-                <div ng-show="tutorialOpen">
+                <div ng-cloak ng-show="tutorialOpen">
                     <p class="f6 ttu">
                         Tutorial
                     </p>
