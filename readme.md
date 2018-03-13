@@ -1,6 +1,6 @@
 # Paprika Functions App
 
-This is a WIP endeavour to host [Paprika.Net][paprikanet] in an Azure Functions App so that it can be stateless and serverless.
+This is the code for <https://paprika.me.uk>, a tool for generating random language according to human-written grammars. It hosts [Paprika.Net][paprikanet] in an Azure Functions App so that it can be stateless and serverless.
 
 [paprikanet]: https://github.com/stegriff/paprika.net
 
@@ -30,7 +30,7 @@ For some design principles and API, please see [`/docs/api.md`][api]. Take a loo
 
  0. ~~Static-grammar function app with no auth **MVP**~~
  0. ~~Single user function app environment loading from storage (no auth)~~
- 0. Multi-user function app loading per-user grammars from storage
+ 0. ~~Multi-user function app loading per-user grammars from storage~~
 
 ## Aims
 
@@ -39,11 +39,11 @@ For some design principles and API, please see [`/docs/api.md`][api]. Take a loo
 
  ## Status
 
- I have a working multi-user online version! This will be ready in Dec/Jan. It is currently online but I've decided not to publish it openly until it is user-friendly.
+It's done! We went live 6th March 2018!
 
  ## To Do
 
- - [ ] Anonymous users
- - [ ] Default grammars
- - [ ] User creation
- - [ ] Sensible login workflow#
+ - [x] Anonymous users
+ - [x] Default grammars
+ - [x] User creation
+ - [x] Sensible login workflow
