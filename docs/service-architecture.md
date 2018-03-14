@@ -20,3 +20,24 @@ When parsing a grammar:
 
  * The `/Grammar/Edit` endpoint will receive the grammar file, parse it to a PG Struct, and load that into table storage.
  * The parser will pull up the latest (only?) grammar from table storage, rehydrate it, and use it to parse the query.
+ 
+## Auto-tweeting
+
+ * User authorises Paprika to access their Twitter account
+ * User sets up a tweet schedule ("Every 1 hour(s), post (query:) '[tweet]') initally the lower bound is 1 hour. They turn the Schedule On/Off switch to On.
+ * Schedule is saved to the user's table row as `ScheduleMinuteInterval: 60`, `ScheduleQuery: [tweet]`, `ScheduleEnable: true`, `ScheduleLastPosted: 2017-01-01T00:00:00` (the last value is an arbitrary epoch which is guaranteed to be in the past)
+ * Every 20 mins (initially) the new `ScheduledTweets` timed Function runs.
+     - This is a slow job because it has to full-text-search every user so we won't make it do the hard work of actually tweeting
+     - It finds every user where `ScheduleLastPosted + Minutes(ScheduleMinuteInterval) < DateTime.Now` and adds their `Username`, `ScheduleQuery`, and OAuth fields to a new Queue Message (in a new `TweetQueue` queue).
+ * Every time a message is detected in `TweetQueue`, the new `PostTweets` Function runs 
+     - It pulls out the details loaded above and uses the OAuth deets to authorise with Twitter.
+	 - It resolves their `ScheduleQuery` into a result
+	 - It posts the result to their twitter account
+ 
+### New components:
+
+ * New fields in User
+ * New queue, "TweetQueue"
+ * New Function, "ScheduleTweets"
+ * New Function, "PostTweets"
+ * New UI for setting up schedule
