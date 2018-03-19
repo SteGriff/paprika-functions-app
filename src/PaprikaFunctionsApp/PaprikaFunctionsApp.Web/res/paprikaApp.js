@@ -2,8 +2,8 @@
 
 paprikaApp.controller('MainController', ['$scope', '$http', function ($scope, $http) {
 
-    $scope.baseUrl = "";
-    //$scope.baseUrl = "http://localhost:7071/";
+    //$scope.baseUrl = "";
+    $scope.baseUrl = "http://localhost:7071/";
 
     $scope.uploadFileEndpoint = {
         url: $scope.baseUrl + '/api/Grammar/UploadFile/',
@@ -19,16 +19,16 @@ paprikaApp.controller('MainController', ['$scope', '$http', function ($scope, $h
     };
     $scope.getGrammarEndpoint = {
         url: $scope.baseUrl + '/api/Grammar/GetGrammar/',
-        key: 'RMMCAxuECnryL29QwzIiqB8JZ9LnrQF8JWb5whPpadcdCgayzveYIQ==',
-    }
+        key: 'RMMCAxuECnryL29QwzIiqB8JZ9LnrQF8JWb5whPpadcdCgayzveYIQ=='
+    };
     $scope.newAnonEndpoint = {
         url: $scope.baseUrl + '/api/Anon/New/',
-        key: 'Z3KhN4CAzjiilXrgohxb7s24cRkgWslIYZmeS9oqliafaSlOgMQEpw==',
-    }
+        key: 'Z3KhN4CAzjiilXrgohxb7s24cRkgWslIYZmeS9oqliafaSlOgMQEpw=='
+    };
     $scope.upgradeAnonEndpoint = {
         url: $scope.baseUrl + '/api/Anon/Upgrade/',
-        key: 'hCRr9w3QhRbUqbQguaXzpZl1buJkMm2srnTmuaEbf1C4RsxpCSUHQA==',
-    }
+        key: 'hCRr9w3QhRbUqbQguaXzpZl1buJkMm2srnTmuaEbf1C4RsxpCSUHQA=='
+    };
 
     //Set by DOM:
     //$scope.username;
@@ -39,44 +39,44 @@ paprikaApp.controller('MainController', ['$scope', '$http', function ($scope, $h
         {
             "title": "Basic lookup of simple tags",
             "produces": "what a neat red dog",
-            "input": "what a [cool] [colour] [animal]",
+            "input": "what a [cool] [colour] [animal]"
         },
         {
             "title": "Repeated tags get the same value every time:",
             "produces": "wolf!! wolf in the library!!",
-            "input": "[animal]!! [animal] in [place]!!",
+            "input": "[animal]!! [animal] in [place]!!"
         },
         {
             "title": "You can re-roll for a different word using hashtags at the end of a tag but they're not guaranteed to be different results",
             "produces": "yellow bear, grey lion",
-            "input": "[colour#1] [animal#1], [colour#2] [animal#2]",
+            "input": "[colour#1] [animal#1], [colour#2] [animal#2]"
         },
         {
             "title": "The hashtags can be anything you want to use to distinguish the tags",
             "produces": "from the park to school",
-            "input": "from [place#from] to [place#to]",
+            "input": "from [place#from] to [place#to]"
         },
         {
             "title": "You can nest tags as long as the inside-bit has already been resolved",
             "produces": "my lion controls the weather",
             "input": "my [animal] [does] [[does] thing]",
-            "notes": "After round 1: 'my lion controls [controls thing]' then finally: 'my lion controls the weather'",
+            "notes": "After round 1: 'my lion controls [controls thing]' then finally: 'my lion controls the weather'"
         },
         {
             "title": "To fix that, you can do an 'early' lookup and make it invisible using the ! command:",
             "produces": "pig is an animal",
             "input": "[!thing][[thing]] is [a] [thing]",
-            "notes": "Note that putting [a] or [an] in brackets is magic; it will be replaced with the correct article (a/an) when resolved",
+            "notes": "Note that putting [a] or [an] in brackets is magic; it will be replaced with the correct article (a/an) when resolved"
         },
         {
             "title": "Another nested example",
             "produces": "Choose an animal. Choose mouse",
-            "input": "Choose [a] [thing]. Choose [[thing]]",
+            "input": "Choose [a] [thing]. Choose [[thing]]"
         },
         {
             "title": "If you put a slash in a tag, it won't look it up, but will pick from the options",
             "produces": "this day can't get any better",
-            "input": "[my/this] day [could/can't] get any [worse/better]",
+            "input": "[my/this] day [could/can't] get any [worse/better]"
         },
         {
             "title": "You can make a word fully optional using the slash",
@@ -91,21 +91,23 @@ paprikaApp.controller('MainController', ['$scope', '$http', function ($scope, $h
     {
         return index <= $scope.tutorialStep ? "✅" : "◼";
     }
-    $scope.nextStep = function () { if ($scope.tutorialStep < $scope.tutorials.length - 1) { $scope.tutorialStep++ } }
-    $scope.prevStep = function () { if ($scope.tutorialStep > 0) { $scope.tutorialStep-- } }
+    $scope.nextStep = function () { if ($scope.tutorialStep < $scope.tutorials.length - 1) { $scope.tutorialStep++; } }
+    $scope.prevStep = function () { if ($scope.tutorialStep > 0) { $scope.tutorialStep--; } }
     $scope.useExample = function () {
         $scope.query = $scope.tutorials[$scope.tutorialStep].input;
         $scope.doQuery();
-    }
-    $scope.startTutorial = function ()
-    {
+    };
+    $scope.startTutorial = function () {
         $scope.tutorialStep = 0;
         $scope.tutorialOpen = true;
-    }
+    };
 
-    $scope.showModal = false;
-    $scope.openDialog = function () { $scope.showModal = true; }
-    $scope.closeDialog = function () { $scope.showModal = false; }
+    $scope.modal = '';
+    $scope.openDialog = function () { $scope.modal = 'upgrade'; }
+    $scope.openTwitterDialog = function () { $scope.modal = 'twitter'; }
+    $scope.closeDialog = function () { $scope.modal = ''; }
+
+    $scope.connectedToTwitter = false;
 
     $scope.reports = [];
     $scope.report = function (success, status, response) {
@@ -173,7 +175,7 @@ paprikaApp.controller('MainController', ['$scope', '$http', function ($scope, $h
         var populateGrammarOnSuccess = function (response) {
             $scope.grammarText = response.data;
             //Hack to check if user is Anon
-            $scope.isAnon = ($scope.username.lastIndexOf("User", 0) === 0);
+            $scope.isAnon = $scope.username.lastIndexOf("User", 0) === 0;
             $scope.report(true, "Loaded", "Got grammar for " + $scope.username);
         }
 

@@ -59,12 +59,10 @@
                 </span>
 
                 <span>
-                    <input ng-model="username" type="text" placeholder="username" class="js-username
-                           pa1 ph2 h2
+                    <input ng-model="username" type="text" placeholder="username" class="pa1 ph2 h2
                        b--black-60 black-80 bg-white bw1 ba"/>
 
-                    <input ng-model="password" type="password" placeholder="password" class="js-password
-                           pa1 ph2 h2
+                    <input ng-model="password" type="password" placeholder="password" class="pa1 ph2 h2
                        b--black-60 black-80 bg-white bw1 ba"/>
 
                     <button type="button" ng-click="getGrammar()"
@@ -75,11 +73,17 @@
                     </button>
 
                     <button type="button" ng-cloak ng-show="isAnon" ng-click="openDialog()"
-                            class="js-upgrade-anon
-                            dib mv1 pa1 ph3 h2
+                            class="dib mv1 pa1 ph3 h2
                             b--black-80 black-80 bg-white bw1 ba
                             b pointer">
                         Make into real account
+                    </button>
+                    <button type="button" ng-click="openTwitterDialog()" ng-show="!isAnon && !connectedToTwitter"
+                            class="dib ml1 pa1 ph3 h2
+                            b--black-80 black-80 bw1 ba
+                            bg-blue white
+                            b pointer">
+                        Connect to Twitter
                     </button>
                 </span>
             </div>
@@ -93,13 +97,11 @@
 
                 <p><label for="query" class="f6 ttu">Paprika Query:</label></p>
                 <form>
-                    <input name="query" id="query" type="text" ng-model="query" class="js-query
-                       h2 w-90 ph1
+                    <input name="query" id="query" type="text" ng-model="query" class="h2 w-90 ph1
                        b--black-60 black-80 bg-white bw1 ba">
 
                     <button type="submit" ng-click="doQuery()"
-                            class="
-                            h2
+                            class="h2
                             b--black-80 black-80 bg-white bw1 ba
                             b pointer">
                         Send
@@ -111,7 +113,7 @@
                 <p class="f6 ttu">
                     Results
                     (<span ng-click="clearResults()" class="f6 underline pointer ttu">Clear</span>):
-                    <span ng-show="isLoading" ng-bind="loadingText" class="js-loading bg-gray white pa1 br1">
+                    <span ng-show="isLoading" ng-bind="loadingText" class="bg-gray white pa1 br1">
                         Loading...
                     </span>
                     
@@ -164,8 +166,7 @@
                 <p class="f6 ttu">Your Grammar:</p>
                 <textarea
                           ng-model="grammarText"
-                          class="js-grammar-text
-                          w-100 h5 pa2
+                          class="w-100 h5 pa2
                           b--black-60 black-80 bg-white bw1 ba mw-100"></textarea>
                 <div>
                     <button type="button" ng-click="uploadText()"
@@ -179,22 +180,20 @@
         </div>
     </main>
 
-    <div class="js-overlay
-	    z-0
+    <div class="z-0
 	    bg-gray o-50
 	    fixed absolute--fill
 	    t-0 l-0"
-        ng-show="showModal"
+        ng-show="modal"
         ng-click="closeDialog()"
         ng-cloak>
     </div>
 
-    <div class="js-modal
-		z-1
+    <div class="z-1
 		b--black-80 black-80 bg-white bw1 ba
 		fixed t-50 l-50 translate-center w-90 w-50-ns
 		ma2 pa1 ph3"
-        ng-show="showModal"
+        ng-show="modal==='upgrade'"
         ng-cloak>
 
         <span class="fr f3 pointer" ng-click="closeDialog()">&times;</span>
@@ -203,22 +202,22 @@
             <form>
                 <fieldset class="ba b--transparent ph0 mh0">
                     <legend class="f4 fw6">Sign Up</legend>
-                    <p class="">This will transform your temporary <span class="js-user-placeholder">User</span> account into a permanent account, saving all of your grammar changes. It's completely free!</p>
+                    <p class="">This will transform and rename your temporary <span ng-bind="username">User</span> account into a permanent account, saving all of your grammar changes. It's completely free!</p>
                     <div class="mt3">
                         <label class="db fw6 lh-copy f6" for="email-address">Email</label>
-                        <input class="js-new-email pa2 input-reset ba bg-transparent w-100"
+                        <input class="pa2 input-reset ba bg-transparent w-100"
                                ng-model="newEmail"
                                type="email" name="email-address" placeholder="person@example.com">
                     </div>
                     <div class="mt3">
                         <label class="db fw6 lh-copy f6" for="email-address">New Username</label>
-                        <input class="js-new-username pa2 input-reset ba bg-transparent w-100"
+                        <input class="pa2 input-reset ba bg-transparent w-100"
                                ng-model="newUsername"
                                type="text" name="new-username" placeholder="New username">
                     </div>
                     <div class="mv3">
                         <label class="db fw6 lh-copy f6" for="password">New Password</label>
-                        <input class="js-new-password b pa2 input-reset ba bg-transparent w-100"
+                        <input class="b pa2 input-reset ba bg-transparent w-100"
                                ng-model="newPassword"
                                type="password" name="password">
                     </div>
@@ -231,6 +230,39 @@
                             Save as real account
                         </button>
                 </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="z-1
+		b--black-80 black-80 bg-white bw1 ba
+		fixed t-50 l-50 translate-center w-90 w-50-ns
+		ma2 pa1 ph3"
+         ng-show="modal==='twitter'"
+         ng-cloak>
+
+        <span class="fr f3 pointer" ng-click="closeDialog()">&times;</span>
+
+        <div class="center pv2">
+            <form>
+                    <p class="f4 fw6">Connect to Twitter</p>
+                    
+                    <p>In 2 Easy Steps:</p>
+
+                    <ol>
+                        <li>Create a Twitter account that you want Paprika to post as. You probably want to make an account for your bot, separate from your personal account!</li>
+                        <li>Click the button below, and sign in as your new Twitter bot:</li>
+                    </ol>
+
+                    <div>
+                        <button type="button" ng-click="connectTwitter()"
+                                class="center mv1 pa1 ph3 h2
+                            b--black-80 black-80 bw1 ba
+                            bg-blue white
+                            b pointer">
+                            Connect Twitter
+                        </button>
+                    </div>
             </form>
         </div>
     </div>

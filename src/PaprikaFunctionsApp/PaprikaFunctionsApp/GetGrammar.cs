@@ -43,7 +43,7 @@ namespace PaprikaFunctionsApp
             }
             catch (Exception ex)
             {
-                return req.CreateResponse(HttpStatusCode.InternalServerError, "Not ready");
+                return req.CreateResponse(HttpStatusCode.InternalServerError, "Not ready: " + ex.Message);
             }
             
             return req.CreateResponse(grammarString);
