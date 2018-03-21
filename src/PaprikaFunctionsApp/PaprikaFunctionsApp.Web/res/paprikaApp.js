@@ -2,8 +2,8 @@
 
 paprikaApp.controller('MainController', ['$scope', '$http', function ($scope, $http) {
 
-    //$scope.baseUrl = "";
-    $scope.baseUrl = "http://localhost:7071/";
+    $scope.baseUrl = "";
+    //$scope.baseUrl = "http://localhost:7071/";
 
     $scope.uploadFileEndpoint = {
         url: $scope.baseUrl + '/api/Grammar/UploadFile/',
@@ -28,6 +28,10 @@ paprikaApp.controller('MainController', ['$scope', '$http', function ($scope, $h
     $scope.upgradeAnonEndpoint = {
         url: $scope.baseUrl + '/api/Anon/Upgrade/',
         key: 'hCRr9w3QhRbUqbQguaXzpZl1buJkMm2srnTmuaEbf1C4RsxpCSUHQA=='
+    };
+    $scope.connectTwitterEndpoint = {
+        url: $scope.baseUrl + '/api/Twitter/Authorise',
+        key: 't6GaF9nD97cofmij9vd4ihuzGRMR/uKJRowH1XWlUFuI/I87RpMFxA=='
     };
 
     //Set by DOM:
@@ -230,6 +234,24 @@ paprikaApp.controller('MainController', ['$scope', '$http', function ($scope, $h
         options.data = { "newUsername": $scope.newUsername, "newPassword": $scope.newPassword };
 
         $scope.webRequest(options, usePermanentData);
+
+        event.preventDefault();
+        return false;
+    }
+
+    $scope.connectTwitter = function (event) {
+        console.log("Connect Twitter");
+
+        //$scope.report(true, "Transformulating...", "I'm saving your new user account");
+
+        var beConnected = function (response) {
+            $scope.connectedToTwitter = true;
+            $scope.report(true, "Connected", "Connected to Twitter");
+            $scope.closeDialog();
+        }
+
+        var options = $scope.getOptions($scope.connectTwitterEndpoint);
+        $scope.webRequest(options, beConnected);
 
         event.preventDefault();
         return false;

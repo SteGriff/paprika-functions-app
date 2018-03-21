@@ -19,7 +19,7 @@ namespace PaprikaFunctionsApp
         [FunctionName("TwitterAuthorise")]
         public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = "Twitter/Authorise")]HttpRequestMessage req, TraceWriter log)
         {
-            log.Info("Start twitter auth");
+            log.Info("Start TwitterAuthorise");
 
             try
             {
@@ -52,6 +52,8 @@ namespace PaprikaFunctionsApp
             var myLogger = new TraceAdaptor(log);
             var twitter = new OAuthClient(myLogger);
             var location = twitter.GetAuthorizeUri(consumerKey, consumerSecret, twitterCallbackUri);
+
+            log.Info("Redirecting to " + location.ToString());
 
             HttpResponseMessage response = req.CreateResponse(HttpStatusCode.Moved);
             response.Headers.Location = location;

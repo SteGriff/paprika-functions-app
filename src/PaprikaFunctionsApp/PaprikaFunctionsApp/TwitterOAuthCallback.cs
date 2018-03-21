@@ -21,6 +21,12 @@ namespace PaprikaFunctionsApp
         {
             log.Info("OAuth Response");
 
+            if (string.IsNullOrEmpty(username))
+            {
+                log.Error("Twitter/OAuth/{username} - Username is empty");
+                return req.CreateResponse(HttpStatusCode.BadRequest, "Username was not supplied");
+            }
+
             try
             {
                 _storageProvider = StorageProvider.GetStorageProvider();
@@ -56,11 +62,17 @@ namespace PaprikaFunctionsApp
             paprikaUser.OAuthTokenSecret = twitterUser.TokenSecret;
 
             var result = await users.UpdateUserAsync(paprikaUser);
-            
+
             if (result.Success)
             {
-                //TODO Redirect back to app
-                return req.CreateResponse(HttpStatusCode.OK, "All good, go to /api/Tweet/{username}");
+                // Redirect back to app
+                var locationUri = new Uri(req.RequestUri.Host);
+                log.Info("Redirecting to " + locationUri.ToString());
+
+                HttpResponseMessage response = req.CreateResponse(HttpStatusCode.Moved);
+                response.Headers.Location = locationUri;
+                return response;
+                //return req.CreateResponse(HttpStatusCode.OK, "All good, go to /api/Tweet/{username}");
             }
             else
             {
