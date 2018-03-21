@@ -17,7 +17,7 @@ namespace PaprikaFunctionsApp
         private static AzureStorageProvider _storageProvider;
 
         [FunctionName("TwitterAuthorise")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = "Twitter/Authorise")]HttpRequestMessage req, TraceWriter log)
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "Twitter/Authorise")]HttpRequestMessage req, TraceWriter log)
         {
             log.Info("Start TwitterAuthorise");
 
@@ -38,10 +38,20 @@ namespace PaprikaFunctionsApp
                 return authenticationStatus.Attachment;
             }
 
-            var consumerKey = ConfigurationManager.AppSettings["ConsumerKey"];
-            var consumerSecret = ConfigurationManager.AppSettings["ConsumerSecret"];
-            var twitterCallback = ConfigurationManager.AppSettings["TwitterCallback"];
-            
+            string consumerKey;
+            string consumerSecret;
+            string twitterCallback;
+            try
+            {
+                consumerKey = ConfigurationManager.AppSettings["ConsumerKey"];
+                consumerSecret = ConfigurationManager.AppSettings["ConsumerSecret"];
+                twitterCallback = ConfigurationManager.AppSettings["TwitterCallback"];
+            }
+            catch (Exception)
+            {
+                return req.CreateResponse(HttpStatusCode.InternalServerError, "App is configured wrong; missing twitter API details");
+            }
+
             if (!twitterCallback.EndsWith("/"))
             {
                 twitterCallback += "/";

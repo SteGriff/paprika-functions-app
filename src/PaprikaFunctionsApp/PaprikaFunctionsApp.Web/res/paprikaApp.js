@@ -239,21 +239,21 @@ paprikaApp.controller('MainController', ['$scope', '$http', function ($scope, $h
         return false;
     }
 
-    $scope.connectTwitter = function (event) {
+    $scope.connectTwitter = function () {
         console.log("Connect Twitter");
 
         //$scope.report(true, "Transformulating...", "I'm saving your new user account");
 
-        var beConnected = function (response) {
-            $scope.connectedToTwitter = true;
-            $scope.report(true, "Connected", "Connected to Twitter");
-            $scope.closeDialog();
+        var redirect = function (response) {
+            console.log(response);
+            //$scope.connectedToTwitter = true;
+            //$scope.report(true, "Connected", "Connected to Twitter");
+            //$scope.closeDialog();
         }
 
         var options = $scope.getOptions($scope.connectTwitterEndpoint);
-        $scope.webRequest(options, beConnected);
-
-        event.preventDefault();
+        $scope.webRequest(options, redirect);
+        
         return false;
     }
 

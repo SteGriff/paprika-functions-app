@@ -46,8 +46,17 @@ namespace PaprikaFunctionsApp
                 .FirstOrDefault(q => string.Compare(q.Key, "oauth_verifier", true) == 0)
                 .Value;
 
-            var consumerKey = ConfigurationManager.AppSettings["ConsumerKey"];
-            var consumerSecret = ConfigurationManager.AppSettings["ConsumerSecret"];
+            string consumerKey;
+            string consumerSecret;
+            try
+            {
+                consumerKey = ConfigurationManager.AppSettings["ConsumerKey"];
+                consumerSecret = ConfigurationManager.AppSettings["ConsumerSecret"];
+            }
+            catch (Exception)
+            {
+                return req.CreateResponse(HttpStatusCode.InternalServerError, "App is configured wrong; missing twitter API details");
+            }
 
             var myLogger = new TraceAdaptor(log);
             var twitter = new OAuthClient(myLogger);
