@@ -78,12 +78,12 @@
                             b pointer">
                         Make into real account
                     </button>
-                    <button type="button" ng-click="openTwitterDialog()" ng-show="!isAnon && !connectedToTwitter"
+                    <button type="button" ng-click="openTwitterDialog()" ng-show="!isAnon"
                             class="dib ml1 pa1 ph3 h2
                             b--black-80 black-80 bw1 ba
                             bg-blue white
                             b pointer">
-                        Connect to Twitter
+                        Set up Tweets
                     </button>
                 </span>
             </div>
@@ -255,13 +255,13 @@
                     </ol>
 
                     <div>
-                        <button type="button" ng-click="connectTwitter()"
-                                class="center mv1 pa1 ph3 h2
+                        <a ng-href="/api/Twitter/Authorise/{{identifier}}"
+                                class="center dib no-underline mv1 pa1 ph3 h2
                             b--black-80 black-80 bw1 ba
                             bg-blue white
                             b pointer">
                             Connect Twitter
-                        </button>
+                        </a>
                     </div>
             </form>
         </div>

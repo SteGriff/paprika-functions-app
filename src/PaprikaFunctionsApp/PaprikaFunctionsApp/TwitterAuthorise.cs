@@ -9,6 +9,7 @@ using PaprikaFunctionsApp.Common.Twitter;
 using System;
 using PaprikaFunctionsApp.Adaptors;
 using PaprikaFunctionsApp.Common;
+using PaprikaFunctionsApp.Common.Extensions;
 
 namespace PaprikaFunctionsApp
 {
@@ -17,9 +18,14 @@ namespace PaprikaFunctionsApp
         private static AzureStorageProvider _storageProvider;
 
         [FunctionName("TwitterAuthorise")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "Twitter/Authorise")]HttpRequestMessage req, TraceWriter log)
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Twitter/Authorise/{identifier}")]HttpRequestMessage req, string identifier, TraceWriter log)
         {
-            log.Info("Start TwitterAuthorise");
+            log.Info("Start TwitterAuthorise with id:" + identifier);
+
+            if (string.IsNullOrEmpty(identifier))
+            {
+                return req.CreateResponse(HttpStatusCode.BadRequest, "Bad identifier");
+            }
 
             try
             {
@@ -29,6 +35,9 @@ namespace PaprikaFunctionsApp
             {
                 return req.CreateResponse(HttpStatusCode.InternalServerError, "Storage Connection Error");
             }
+
+            //Change {identifier} into authentication headers
+            req.AddAuthenticationHeadersFromIdentifier(identifier);
 
             //Check authentication and kick user with 401 if there's a problem
             var authorisation = new AuthenticationResponse();

@@ -1,9 +1,35 @@
-﻿var paprikaApp = angular.module('paprikaApp', []);
+﻿var paprikaApp = angular
+    .module('paprikaApp', ['LocalStorageModule'])
+    .config(function (localStorageServiceProvider) {
+        localStorageServiceProvider.setPrefix('paprikaMeUk');
+    });
 
-paprikaApp.controller('MainController', ['$scope', '$http', function ($scope, $http) {
+paprikaApp.controller('MainController', ['$scope', '$http', 'localStorageService', function ($scope, $http, localStorageService) {
 
     $scope.baseUrl = "";
-    //$scope.baseUrl = "http://localhost:7071/";
+
+    const USERNAME = 'username';
+    const PASSWORD = 'password';
+    $scope.username = localStorageService.get(USERNAME);
+    $scope.password = localStorageService.get(PASSWORD);
+
+    $scope.$watch(USERNAME, function (value) {
+        $scope.identifier = $scope.getIdentifier();
+        localStorageService.set(USERNAME, value);
+    });
+    $scope.$watch(PASSWORD, function (value) {
+        $scope.identifier = $scope.getIdentifier();
+        localStorageService.set(PASSWORD, value);
+    });
+    
+    $scope.$watch(
+        function () { return localStorageService.get(USERNAME); },
+        function (value) { $scope.username = value; }
+    );
+    $scope.$watch(
+        function () { return localStorageService.get(PASSWORD); },
+        function (value) { $scope.password = value; }
+    );
 
     $scope.uploadFileEndpoint = {
         url: $scope.baseUrl + '/api/Grammar/UploadFile/',
@@ -29,14 +55,8 @@ paprikaApp.controller('MainController', ['$scope', '$http', function ($scope, $h
         url: $scope.baseUrl + '/api/Anon/Upgrade/',
         key: 'hCRr9w3QhRbUqbQguaXzpZl1buJkMm2srnTmuaEbf1C4RsxpCSUHQA=='
     };
-    $scope.connectTwitterEndpoint = {
-        url: $scope.baseUrl + '/api/Twitter/Authorise',
-        key: 't6GaF9nD97cofmij9vd4ihuzGRMR/uKJRowH1XWlUFuI/I87RpMFxA=='
-    };
 
     //Set by DOM:
-    //$scope.username;
-    //$scope.password;
     //$scope.isAnon;
 
     $scope.tutorials = [
@@ -239,24 +259,21 @@ paprikaApp.controller('MainController', ['$scope', '$http', function ($scope, $h
         return false;
     }
 
-    $scope.connectTwitter = function () {
-        console.log("Connect Twitter");
+    $scope.getIdentifier = function () {
+        console.log("Get Identifier");
 
-        //$scope.report(true, "Transformulating...", "I'm saving your new user account");
-
-        var redirect = function (response) {
-            console.log(response);
-            //$scope.connectedToTwitter = true;
-            //$scope.report(true, "Connected", "Connected to Twitter");
-            //$scope.closeDialog();
+        function utoa(str) {
+            return window.btoa(unescape(encodeURIComponent(str)));
         }
 
-        var options = $scope.getOptions($scope.connectTwitterEndpoint);
-        $scope.webRequest(options, redirect);
-        
-        return false;
-    }
+        var separator = "----IDENTIFIER----";
+        var concat = $scope.username + separator + $scope.password;
+        var identifier = utoa(concat);
+        console.log(identifier);
 
+        return identifier;
+    }
+    
     $scope.isLoading = false;
     $scope.loading = function (isOn, text) {
         $scope.isLoading = isOn;

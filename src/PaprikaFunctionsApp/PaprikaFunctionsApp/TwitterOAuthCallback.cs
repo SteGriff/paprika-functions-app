@@ -62,6 +62,7 @@ namespace PaprikaFunctionsApp
             var twitter = new OAuthClient(myLogger);
             var twitterUser = twitter.GetUser(consumerKey, consumerSecret, oauthToken, oauthVerifier);
 
+            log.Info("Get User for update...");
             var users = new UserUtilities(_storageProvider);
             var paprikaUser = users.GetUser(username);
 
@@ -70,12 +71,15 @@ namespace PaprikaFunctionsApp
             paprikaUser.OAuthToken = twitterUser.Token;
             paprikaUser.OAuthTokenSecret = twitterUser.TokenSecret;
 
+            log.Info("Updating User table...");
             var result = await users.UpdateUserAsync(paprikaUser);
 
             if (result.Success)
             {
+                log.Info("Updated!");
+
                 // Redirect back to app
-                var locationUri = new Uri(req.RequestUri.Host);
+                var locationUri = new Uri("https://paprika.me.uk/");
                 log.Info("Redirecting to " + locationUri.ToString());
 
                 HttpResponseMessage response = req.CreateResponse(HttpStatusCode.Moved);
