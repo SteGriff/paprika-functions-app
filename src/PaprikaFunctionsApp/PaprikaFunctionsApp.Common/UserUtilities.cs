@@ -91,5 +91,21 @@ namespace PaprikaFunctionsApp.Common
             }
             return new Status<string>(true);
         }
+
+        public async Task<Status<string>> UpdateUserAsync(UserEntity user)
+        {
+            try
+            {
+                var tableAccess = new TableUtilities(_storageProvider);
+                var userTable = tableAccess.GetTable(USERS);
+                var update = TableOperation.Merge(user);
+                await userTable.ExecuteAsync(update);
+            }
+            catch (Exception ex)
+            {
+                return new Status<string>(false, ex.Message);
+            }
+            return new Status<string>(true);
+        }
     }
 }

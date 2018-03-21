@@ -17,7 +17,7 @@ namespace PaprikaFunctionsApp
         private static AzureStorageProvider _storageProvider;
 
         [FunctionName("TwitterOAuthCallback")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "Twitter/OAuth")]HttpRequestMessage req, TraceWriter log)
+        public static async System.Threading.Tasks.Task<HttpResponseMessage> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "Twitter/OAuth/{username}")]HttpRequestMessage req, string username, TraceWriter log)
         {
             log.Info("OAuth Response");
 
@@ -42,30 +42,29 @@ namespace PaprikaFunctionsApp
 
             var consumerKey = ConfigurationManager.AppSettings["ConsumerKey"];
             var consumerSecret = ConfigurationManager.AppSettings["ConsumerSecret"];
-            var twitterCallback = ConfigurationManager.AppSettings["TwitterCallback"];
 
             var myLogger = new TraceAdaptor(log);
             var twitter = new OAuthClient(myLogger);
-            var user = twitter.GetUser(consumerKey, consumerSecret, oauthToken, oauthVerifier);
+            var twitterUser = twitter.GetUser(consumerKey, consumerSecret, oauthToken, oauthVerifier);
 
-            var usersData = new Users(ConfigurationManager.ConnectionStrings["PrimaryStorage"].ConnectionString);
-            var userEntity = new UserEntity(user.UserName, user.UserName)
+            var users = new UserUtilities(_storageProvider);
+            var paprikaUser = users.GetUser(username);
+
+            paprikaUser.TwitterId = twitterUser.UserId;
+            paprikaUser.TwitterUsername = twitterUser.UserName;
+            paprikaUser.OAuthToken = twitterUser.Token;
+            paprikaUser.OAuthTokenSecret = twitterUser.TokenSecret;
+
+            var result = await users.UpdateUserAsync(paprikaUser);
+            
+            if (result.Success)
             {
-                OAuthToken = user.Token,
-                OAuthVerifier = oauthVerifier,
-                OAuthTokenSecret = user.TokenSecret,
-                UpdatedDate = DateTime.Now
-            };
-
-            var result = await usersData.InsertUserAsync(userEntity);
-
-            if (string.IsNullOrEmpty(result))
-            {
+                //TODO Redirect back to app
                 return req.CreateResponse(HttpStatusCode.OK, "All good, go to /api/Tweet/{username}");
             }
             else
             {
-                return req.CreateResponse<string>(HttpStatusCode.InternalServerError, result);
+                return req.CreateResponse<string>(HttpStatusCode.InternalServerError, "Update user failed: " + result.Attachment);
             }
         }
     }

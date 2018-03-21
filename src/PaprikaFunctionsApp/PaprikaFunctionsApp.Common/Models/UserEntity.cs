@@ -23,5 +23,10 @@ namespace PaprikaFunctionsApp.Common.Models
         public DateTime RegistrationDate { get; set; }
         public string EncryptedPassword { get; set; }
         public bool IsAnon { get; set; }
+
+        public string OAuthToken { get; set; }
+        public string OAuthTokenSecret { get; set; }
+        public string TwitterUsername { get; set; }
+        public long TwitterId { get; set; }
     }
 }
