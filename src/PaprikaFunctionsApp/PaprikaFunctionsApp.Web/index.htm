@@ -6,22 +6,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="res/tachyons.min.css" />
     <style>
-        .translate-center { transform: translate(-50%, -50%); }
-        .t-50 { top: 50%; }
-        .l-50 { left: 50%; }
+        .translate-center {
+            transform: translate(-50%, -50%);
+        }
+
+        .t-50 {
+            top: 50%;
+        }
+
+        .l-50 {
+            left: 50%;
+        }
+
         .bg-rainbow {
             background: linear-gradient(124deg, #ff2400, #e81d1d, #e8b71d, #e3e81d, #1de840, #1ddde8, #2b1de8, #dd00f3, #dd00f3);
             background-size: 1800% 1800%;
             animation: rainbow 9s linear infinite;
         }
+
         @keyframes rainbow {
-            0% { background-position: 0% 82% }
-            50% { background-position: 100% 19% }
-            100% { background-position: 0% 82% }
+            0% {
+                background-position: 0% 82%
+            }
+
+            50% {
+                background-position: 100% 19%
+            }
+
+            100% {
+                background-position: 0% 82%
+            }
         }
+
         .max-height {
             max-height: 12rem;
         }
+
         [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
             display: none !important;
         }
@@ -60,10 +80,10 @@
 
                 <span>
                     <input ng-model="username" type="text" placeholder="username" class="pa1 ph2 h2
-                       b--black-60 black-80 bg-white bw1 ba"/>
+                       b--black-60 black-80 bg-white bw1 ba" />
 
                     <input ng-model="password" type="password" placeholder="password" class="pa1 ph2 h2
-                       b--black-60 black-80 bg-white bw1 ba"/>
+                       b--black-60 black-80 bg-white bw1 ba" />
 
                     <button type="button" ng-click="getGrammar()"
                             class="dib mv1 pa1 ph3 h2 w4
@@ -108,7 +128,7 @@
                     </button>
                 </form>
             </div>
-            
+
             <div class="w-100 w-40-ns fr-ns b--black-10 bl-ns pl2-ns">
                 <p class="f6 ttu">
                     Results
@@ -116,7 +136,7 @@
                     <span ng-show="isLoading" ng-bind="loadingText" class="bg-gray white pa1 br1">
                         Loading...
                     </span>
-                    
+
                 </p>
                 <ul class="lh-copy overflow-y-scroll max-height">
                     <li ng-repeat="report in reports | orderBy:'':true" ng-class="{'b' : report.answer}">
@@ -164,8 +184,7 @@
 
             <div class="w-100 w-50-ns fl-ns">
                 <p class="f6 ttu">Your Grammar:</p>
-                <textarea
-                          ng-model="grammarText"
+                <textarea ng-model="grammarText"
                           class="w-100 h5 pa2
                           b--black-60 black-80 bg-white bw1 ba mw-100"></textarea>
                 <div>
@@ -184,17 +203,17 @@
 	    bg-gray o-50
 	    fixed absolute--fill
 	    t-0 l-0"
-        ng-show="modal"
-        ng-click="closeDialog()"
-        ng-cloak>
+         ng-show="modal"
+         ng-click="closeDialog()"
+         ng-cloak>
     </div>
 
     <div class="z-1
 		b--black-80 black-80 bg-white bw1 ba
 		fixed t-50 l-50 translate-center w-90 w-50-ns
 		ma2 pa1 ph3"
-        ng-show="modal==='upgrade'"
-        ng-cloak>
+         ng-show="modal==='upgrade'"
+         ng-cloak>
 
         <span class="fr f3 pointer" ng-click="closeDialog()">&times;</span>
 
@@ -226,9 +245,9 @@
                     <button class="b ph3 pv2 input-reset
         				b--black-80 black-80 bg-white bw1 ba
 				        pointer dib"
-                        ng-click="upgradeAnon(event)">
-                            Save as real account
-                        </button>
+                            ng-click="upgradeAnon(event)">
+                        Save as real account
+                    </button>
                 </div>
             </form>
         </div>
@@ -244,26 +263,66 @@
         <span class="fr f3 pointer" ng-click="closeDialog()">&times;</span>
 
         <div class="center pv2">
-            <form>
-                    <p class="f4 fw6">Connect to Twitter</p>
-                    
-                    <p>In 2 Easy Steps:</p>
+            <p class="f4 fw6">Set up Tweets</p>
 
-                    <ol>
-                        <li>Create a Twitter account that you want Paprika to post as. You probably want to make an account for your bot, separate from your personal account!</li>
-                        <li>Click the button below, and sign in as your new Twitter bot:</li>
-                    </ol>
+            <p ng-show="isLoading" class="bg-gray white pa1 br1">Just a sec...</p>
+            <p ng-show="twitterError" ng-bind="twitterError"></p>
 
+            <div ng-show="twitter">
+                <p class="f3">Tweet Schedule</p>
+                <p>Connected to <b>@<span ng-bind="twitter.TwitterUsername"></span></b></p>
+                <p>Last posted: <span ng-bind="twitter.ScheduleLastPosted"></span></p>
+                <form>
+                    <fieldset class="ba b--transparent ph0 mh0">
+                        <div class="mt3">
+                            <label class="db fw6 lh-copy f6" for="twitter-enable">Enable Tweet Schedule</label>
+                            <input class="pa2 input-reset ba bg-transparent w-100"
+                                   ng-model="twitter.ScheduleEnable"
+                                   type="checkbox" name="twitter-enable">
+                        </div>
+                        <div class="mt3">
+                            <label class="db fw6 lh-copy f6" for="twitter-query">Query to run, to get tweet content:</label>
+                            <input class="pa2 input-reset ba bg-transparent w-100"
+                                   ng-model="twitter.ScheduleQuery"
+                                   type="text" name="twitter-query" placeholder="[tweet]">
+                        </div>
+                        <div class="mt3">
+                            <label class="db fw6 lh-copy f6" for="twitter-interval">Tweet every <i>x</i> hours:</label>
+                            <input class="pa2 input-reset ba bg-transparent w-100"
+                                   ng-model="twitter.ScheduleHourInterval"
+                                   type="number" name="twitter-interval" placeholder="2">
+                        </div>
+                    </fieldset>
                     <div>
-                        <a ng-href="/api/Twitter/Authorise/{{identifier}}"
-                                class="center dib no-underline mv1 pa1 ph3 h2
-                            b--black-80 black-80 bw1 ba
-                            bg-blue white
-                            b pointer">
-                            Connect Twitter
-                        </a>
+                        <button class="b ph3 pv2 input-reset
+        				b--black-80 black-80 bg-white bw1 ba
+				        pointer dib"
+                                ng-click="saveSchedule(event)">
+                            Save Tweet Schedule
+                        </button>
                     </div>
-            </form>
+                </form>
+            </div>
+
+            <div ng-show="!twitter">
+                <p>Connect to Twitter in 2 Easy Steps:</p>
+
+                <ol>
+                    <li>Create a Twitter account that you want Paprika to post as. You probably want to make an account for your bot, separate from your personal account!</li>
+                    <li>Click the button below, and sign in as your new Twitter bot:</li>
+                </ol>
+
+                <div>
+                    <a ng-href="/api/Twitter/Authorise/{{identifier}}"
+                       class="center dib no-underline mv1 pa1 ph3 h2
+                        b--black-80 black-80 bw1 ba
+                        bg-blue white
+                        b pointer">
+                        Connect Twitter
+                    </a>
+                </div>
+            </div>
+
         </div>
     </div>
 

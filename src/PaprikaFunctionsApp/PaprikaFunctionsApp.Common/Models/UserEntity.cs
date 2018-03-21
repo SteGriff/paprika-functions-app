@@ -28,5 +28,11 @@ namespace PaprikaFunctionsApp.Common.Models
         public string OAuthTokenSecret { get; set; }
         public string TwitterUsername { get; set; }
         public long TwitterId { get; set; }
+
+        public int ScheduleMinuteInterval { get; set; }
+        public string ScheduleQuery { get; set; }
+        public bool ScheduleEnable { get; set; }
+        public DateTime ScheduleLastPosted { get; set; }
+
     }
 }

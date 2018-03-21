@@ -55,6 +55,14 @@ paprikaApp.controller('MainController', ['$scope', '$http', 'localStorageService
         url: $scope.baseUrl + '/api/Anon/Upgrade/',
         key: 'hCRr9w3QhRbUqbQguaXzpZl1buJkMm2srnTmuaEbf1C4RsxpCSUHQA=='
     };
+    $scope.twitterGetEndpoint = {
+        url: $scope.baseUrl + '/api/Twitter/Get',
+        key: ''
+    };
+    $scope.twitterSetEndpoint = {
+        url: $scope.baseUrl + '/api/Twitter/Set',
+        key: ''
+    };
 
     //Set by DOM:
     //$scope.isAnon;
@@ -128,10 +136,8 @@ paprikaApp.controller('MainController', ['$scope', '$http', 'localStorageService
 
     $scope.modal = '';
     $scope.openDialog = function () { $scope.modal = 'upgrade'; }
-    $scope.openTwitterDialog = function () { $scope.modal = 'twitter'; }
+    $scope.openTwitterDialog = function () { $scope.modal = 'twitter'; $scope.getTwitter(); }
     $scope.closeDialog = function () { $scope.modal = ''; }
-
-    $scope.connectedToTwitter = false;
 
     $scope.reports = [];
     $scope.report = function (success, status, response) {
@@ -273,7 +279,54 @@ paprikaApp.controller('MainController', ['$scope', '$http', 'localStorageService
 
         return identifier;
     }
-    
+
+    $scope.twitter = null;
+    $scope.getTwitter = function ()
+    {
+        console.log("Get Twitter Data...");
+        
+        var setTwitterData = function (response) {
+            console.log(response);
+            $scope.twitter = response.data;
+            $scope.report(true, "Twitter", "You're linked up to @" + $scope.twitter.TwitterUsername);
+        }
+
+        var complain = function () {
+            $scope.twitterError = "Uh-oh. Failed to fetch your Twitter link details...";
+        }
+
+        var options = $scope.getOptions($scope.twitterGetEndpoint);
+
+        $scope.webRequest(options, setTwitterData, complain);
+    }
+
+    $scope.saveSchedule = function (event) {
+        console.log("Save Schedule");
+
+        $scope.report(true, "Saving...", "I'm saving your Tweet schedule...");
+
+        var scheduleSaved = function (response) {
+            $scope.report(true, "Saved!", "Your tweet schedule was saved");
+            $scope.closeDialog();
+        }
+
+        var complain = function () {
+            $scope.report(false, "Oops", "Failed to save the tweet schedule...");
+        }
+
+        var options = $scope.getOptions($scope.twitterSetEndpoint);
+        options.data = {
+            "ScheduleEnable": $scope.twitter.ScheduleEnable,
+            "ScheduleQuery": $scope.twitter.ScheduleQuery,
+            "ScheduleHourInterval": $scope.twitter.ScheduleHourInterval
+        };
+
+        $scope.webRequest(options, scheduleSaved, complain);
+
+        event.preventDefault();
+        return false;
+    }
+
     $scope.isLoading = false;
     $scope.loading = function (isOn, text) {
         $scope.isLoading = isOn;
