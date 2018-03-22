@@ -7,6 +7,8 @@ namespace PaprikaFunctionsApp.Common.Extensions
 {
     public static class HttpRequestMessageExtensions
     {
+        public const string IdentifierSeparator = "----IDENTIFIER----";
+
         public static void AddAuthenticationHeadersFromIdentifier
             (this HttpRequestMessage req, string identifier)
         {
@@ -15,7 +17,7 @@ namespace PaprikaFunctionsApp.Common.Extensions
             try
             {
                 string plainIdentifier = identifier.Base64Decode();
-                var idParts = plainIdentifier.Split(new string[] { "----IDENTIFIER----" }, StringSplitOptions.RemoveEmptyEntries);
+                var idParts = plainIdentifier.Split(new string[] { IdentifierSeparator }, StringSplitOptions.RemoveEmptyEntries);
                 username = idParts[0];
                 password = idParts[1];
             }

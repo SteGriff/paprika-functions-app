@@ -1,9 +1,8 @@
 ﻿using Microsoft.WindowsAzure.Storage.Table;
+using PaprikaFunctionsApp.Common.Extensions;
 using PaprikaFunctionsApp.Common.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace PaprikaFunctionsApp.Common
@@ -65,10 +64,52 @@ namespace PaprikaFunctionsApp.Common
             return new Status<string>(true);
         }
         
+        public Status<string> ValidatePassword(string newPassword)
+        {
+            if (newPassword.Contains(HttpRequestMessageExtensions.IdentifierSeparator))
+            {
+                return new Status<string>(false, "Your password cannot include " + HttpRequestMessageExtensions.IdentifierSeparator);
+            }
+            else if (newPassword.Length < 7)
+            {
+                return new Status<string>(false, "Password must be 7 characters or longer.");
+            }
+            return new Status<string>(true);
+        }
+
+        public Status<string> ValidateUsername(string newUsername)
+        {
+            if (newUsername.Contains(HttpRequestMessageExtensions.IdentifierSeparator))
+            {
+                return new Status<string>(false, "Your username cannot include " + HttpRequestMessageExtensions.IdentifierSeparator);
+            }
+            else if (newUsername.Length < 2)
+            {
+                return new Status<string>(false, "Username must be 2 characters or longer.");
+            }
+            else if (newUsername.StartsWith("User"))
+            {
+                return new Status<string>(false, "Sorry, a custom username cannot start with 'User'");
+            }
+            return new Status<string>(true);
+        }
+
         public async Task<Status<string>> RenameUserAsync(string oldUsername, string newUsername, string newPassword)
         {
             try
             {
+                var usernameResult = ValidateUsername(newUsername);
+                if (!usernameResult.Success)
+                {
+                    return usernameResult;
+                }
+
+                var passwordResult = ValidatePassword(newPassword);
+                if (!passwordResult.Success)
+                {
+                    return passwordResult;
+                }
+
                 //Create a new user record
                 // and associate the existing grammar cache and blob with the new record
                 var userCreationResult = await CreateUserAsync(newUsername, newPassword, false);

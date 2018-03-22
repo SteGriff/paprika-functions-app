@@ -34,5 +34,12 @@ namespace PaprikaFunctionsApp.Common.Models
         public bool ScheduleEnable { get; set; }
         public DateTime ScheduleLastPosted { get; set; }
 
+        public void MergeFromTwitterModel(UserTwitterViewModel twitterModel)
+        {
+            ScheduleEnable = twitterModel.ScheduleEnable;
+            ScheduleMinuteInterval = twitterModel.ScheduleHourInterval * 60;
+            ScheduleQuery = twitterModel.ScheduleQuery;
+        }
+
     }
 }
