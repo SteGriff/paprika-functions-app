@@ -266,28 +266,37 @@
             <p class="f4 fw6">Set up Tweets</p>
 
             <p ng-show="isLoading" class="bg-gray white pa1 br1">Just a sec...</p>
-            <p ng-show="twitterError" ng-bind="twitterError"></p>
+            <p ng-show="twitterError">
+                <span ng-bind="twitterError"></span>
+                <button class="b pa1 input-reset
+        				    b--black-80 black-80 bg-white bw1 ba
+				            pointer dib" ng-click="getTwitter()">Retry</button>
+            </p>
 
             <div ng-show="twitter">
-                <p class="f3">Tweet Schedule</p>
-                <p>Connected to <b>@<span ng-bind="twitter.TwitterUsername"></span></b></p>
-                <p>Last posted: <span ng-bind="twitter.ScheduleLastPosted"></span></p>
+                <p>
+                    Connected to <a ng-href="https://twitter.com/{{twitter.TwitterUsername}}">
+                        <b>@<span ng-bind="twitter.TwitterUsername"></span></b>
+                    </a>
+                </p>
+                <p><small>Last posted: <span ng-bind="twitter.ScheduleLastPosted"></span></small></p>
                 <form>
                     <fieldset class="ba b--transparent ph0 mh0">
                         <div class="mt3">
-                            <label class="db fw6 lh-copy f6" for="twitter-enable">Enable Tweet Schedule</label>
-                            <input class="pa2 input-reset ba bg-transparent w-100"
-                                   ng-model="twitter.ScheduleEnable"
-                                   type="checkbox" name="twitter-enable">
+                            <label class="db fw6 lh-copy f6" for="twitter-enable">
+                            <input class=""
+                               ng-model="twitter.ScheduleEnable"
+                               type="checkbox" name="twitter-enable">
+                            Enable automatic tweeting?</label>
                         </div>
                         <div class="mt3">
-                            <label class="db fw6 lh-copy f6" for="twitter-query">Query to run, to get tweet content:</label>
+                            <label class="db fw6 lh-copy f6" for="twitter-query">What query shall we run? <small>(To get the content for the tweet?)</small></label>
                             <input class="pa2 input-reset ba bg-transparent w-100"
                                    ng-model="twitter.ScheduleQuery"
                                    type="text" name="twitter-query" placeholder="[tweet]">
                         </div>
                         <div class="mt3">
-                            <label class="db fw6 lh-copy f6" for="twitter-interval">Tweet every <i>x</i> hours:</label>
+                            <label class="db fw6 lh-copy f6" for="twitter-interval">How many hours between tweets?</label>
                             <input class="pa2 input-reset ba bg-transparent w-100"
                                    ng-model="twitter.ScheduleHourInterval"
                                    type="number" name="twitter-interval" placeholder="2">

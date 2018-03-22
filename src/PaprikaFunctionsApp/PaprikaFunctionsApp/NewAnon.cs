@@ -22,7 +22,7 @@ namespace PaprikaFunctionsApp
             {
                 _storageProvider = StorageProvider.GetStorageProvider();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return req.CreateResponse(HttpStatusCode.InternalServerError, "Storage Connection Error");
             }

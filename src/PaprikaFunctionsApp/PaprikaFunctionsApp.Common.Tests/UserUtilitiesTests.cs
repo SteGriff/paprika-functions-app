@@ -1,8 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PaprikaFunctionsApp.Common.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace PaprikaFunctionsApp.Common.Tests
 {
@@ -24,7 +20,7 @@ namespace PaprikaFunctionsApp.Common.Tests
         [TestMethod]
         public void ValidatePassword_RefusesPasswordContainingSeparator()
         {
-            string badPassword = "MySneaky----IDENTIFIER---Password";
+            string badPassword = "MySneaky----IDENTIFIER----Password";
             var mockStorage = new AzureStorageProvider("");
 
             var expected = false;
@@ -39,8 +35,44 @@ namespace PaprikaFunctionsApp.Common.Tests
             string goodPassword = "BlueWheelieBin1010";
             var mockStorage = new AzureStorageProvider("");
 
-            var expected = new Status<string>(true);
-            var actual = new UserUtilities(mockStorage).ValidatePassword(goodPassword);
+            var expected = true;
+            var actual = new UserUtilities(mockStorage).ValidatePassword(goodPassword).Success;
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void ValidateUsername_RefusesShort()
+        {
+            string bad = "i";
+            var mockStorage = new AzureStorageProvider("");
+
+            var expected = false;
+            var actual = new UserUtilities(mockStorage).ValidatePassword(bad).Success;
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void ValidateUsername_RefusesContainingSeparator()
+        {
+            string bad = "MySneaky----IDENTIFIER----Name";
+            var mockStorage = new AzureStorageProvider("");
+
+            var expected = false;
+            var actual = new UserUtilities(mockStorage).ValidatePassword(bad).Success;
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void ValidateUsername_AcceptsGood()
+        {
+            string good = "SteGriff";
+            var mockStorage = new AzureStorageProvider("");
+
+            var expected = true;
+            var actual = new UserUtilities(mockStorage).ValidatePassword(good).Success;
 
             Assert.AreEqual(expected, actual);
         }

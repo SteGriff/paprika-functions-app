@@ -44,6 +44,7 @@ namespace PaprikaFunctionsApp
             try
             {
                 data = await req.Content.ReadAsAsync<UserTwitterViewModel>();
+                log.Info(data.ToString());
             }
             catch (Exception ex)
             {

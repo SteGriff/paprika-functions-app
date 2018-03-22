@@ -24,5 +24,15 @@ namespace PaprikaFunctionsApp.Common.Models
             ScheduleHourInterval = userEntity.ScheduleMinuteInterval / 60;
             ScheduleQuery = userEntity.ScheduleQuery;
         }
+
+        public override string ToString()
+        {
+            return string.Format("@{0}, {1}, '{2}' every {3} hours",
+                TwitterUsername,
+                ScheduleEnable ? "Enabled" : "Disabled",
+                ScheduleQuery,
+                ScheduleHourInterval);
+        }
+
     }
 }

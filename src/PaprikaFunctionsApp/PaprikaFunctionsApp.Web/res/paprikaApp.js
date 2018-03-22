@@ -57,11 +57,11 @@ paprikaApp.controller('MainController', ['$scope', '$http', 'localStorageService
     };
     $scope.twitterGetEndpoint = {
         url: $scope.baseUrl + '/api/Twitter/Get',
-        key: ''
+        key: '9GZSWLecqH1Fp7Tpsu9iLWAWqZDZpJ/qxLVblovK8hwvtkmSeNHvmw=='
     };
     $scope.twitterSetEndpoint = {
         url: $scope.baseUrl + '/api/Twitter/Set',
-        key: ''
+        key: 'oEa3pp2frOMvPlzxaCQKNsUdGfgEfIoYr2DZAyS6m2jdPnBxbHwx9Q=='
     };
 
     //Set by DOM:
@@ -266,8 +266,6 @@ paprikaApp.controller('MainController', ['$scope', '$http', 'localStorageService
     }
 
     $scope.getIdentifier = function () {
-        console.log("Get Identifier");
-
         function utoa(str) {
             return window.btoa(unescape(encodeURIComponent(str)));
         }
@@ -275,8 +273,6 @@ paprikaApp.controller('MainController', ['$scope', '$http', 'localStorageService
         var separator = "----IDENTIFIER----";
         var concat = $scope.username + separator + $scope.password;
         var identifier = utoa(concat);
-        console.log(identifier);
-
         return identifier;
     }
 
@@ -306,12 +302,15 @@ paprikaApp.controller('MainController', ['$scope', '$http', 'localStorageService
         $scope.report(true, "Saving...", "I'm saving your Tweet schedule...");
 
         var scheduleSaved = function (response) {
+            console.log("scheduleSaved", response);
             $scope.report(true, "Saved!", "Your tweet schedule was saved");
             $scope.closeDialog();
         }
 
-        var complain = function () {
+        var complain = function (response) {
+            console.log("complain", response);
             $scope.report(false, "Oops", "Failed to save the tweet schedule...");
+            $scope.twitterError = "Nope, that failed.";
         }
 
         var options = $scope.getOptions($scope.twitterSetEndpoint);
@@ -320,6 +319,8 @@ paprikaApp.controller('MainController', ['$scope', '$http', 'localStorageService
             "ScheduleQuery": $scope.twitter.ScheduleQuery,
             "ScheduleHourInterval": $scope.twitter.ScheduleHourInterval
         };
+
+        console.log(options.data);
 
         $scope.webRequest(options, scheduleSaved, complain);
 
