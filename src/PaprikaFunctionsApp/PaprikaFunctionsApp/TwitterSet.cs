@@ -51,17 +51,23 @@ namespace PaprikaFunctionsApp
                 return req.CreateResponse(HttpStatusCode.BadRequest, "Failed to decode UserTwitterViewModel: " + ex.Message);
             }
 
+            var logger = new Adaptors.TraceAdaptor(log);
+
             log.Info("Get user...");
             var users = new UserUtilities(_storageProvider);
+            users.Logger = logger;
+
             var user = users.GetUser(authorisation.Username);
 
             log.Info("Merge data...");
             user.MergeFromTwitterModel(data);
+            log.Info(user.ToString());
 
             log.Info("Update user...");
             var result = await users.UpdateUserAsync(user);
             if (!result.Success)
             {
+                log.Info("User update failed");
                 return req.CreateResponse(HttpStatusCode.InternalServerError, result.Attachment);
             }
 

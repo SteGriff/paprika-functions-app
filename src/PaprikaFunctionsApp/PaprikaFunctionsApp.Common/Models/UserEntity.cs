@@ -11,11 +11,11 @@ namespace PaprikaFunctionsApp.Common.Models
             DateTime registrationDate = DateTime.Now;
             string passwordSecured = CryptoKey.DeriveKey(passwordPlain, registrationDate.ToString("O"));
 
-            this.PartitionKey = username;
-            this.RowKey = registrationDate.ToIso8601();
-            this.RegistrationDate = registrationDate;
-            this.EncryptedPassword = passwordSecured;
-            this.IsAnon = isAnon;
+            PartitionKey = username;
+            RowKey = registrationDate.ToIso8601();
+            RegistrationDate = registrationDate;
+            EncryptedPassword = passwordSecured;
+            IsAnon = isAnon;
         }
 
         public UserEntity() { }
@@ -41,5 +41,23 @@ namespace PaprikaFunctionsApp.Common.Models
             ScheduleQuery = twitterModel.ScheduleQuery;
         }
 
+        public void Sanitise()
+        {
+            if (ScheduleLastPosted.Year < 2000)
+            {
+                ScheduleLastPosted = DateTime.Now.AddDays(-1);
+            }
+        }
+
+        public override string ToString()
+        {
+            return string.Format("UserEntity PKey:{4}, RowKey:{5}, @{0}, {1}, '{2}' every {3} mins",
+                TwitterUsername,
+                ScheduleEnable ? "Enabled" : "Disabled",
+                ScheduleQuery,
+                ScheduleMinuteInterval,
+                PartitionKey,
+                RowKey);
+        }
     }
 }

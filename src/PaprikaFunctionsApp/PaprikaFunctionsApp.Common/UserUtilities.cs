@@ -1,5 +1,6 @@
 ﻿using Microsoft.WindowsAzure.Storage.Table;
 using PaprikaFunctionsApp.Common.Extensions;
+using PaprikaFunctionsApp.Common.Interfaces;
 using PaprikaFunctionsApp.Common.Models;
 using System;
 using System.Linq;
@@ -11,6 +12,8 @@ namespace PaprikaFunctionsApp.Common
     {
         private AzureStorageProvider _storageProvider;
         const string USERS = "users";
+
+        public ITraceWriter Logger { get; set; }
 
         public UserUtilities(AzureStorageProvider storageProvider)
         {
@@ -139,11 +142,16 @@ namespace PaprikaFunctionsApp.Common
             {
                 var tableAccess = new TableUtilities(_storageProvider);
                 var userTable = tableAccess.GetTable(USERS);
+                user.Sanitise();
                 var update = TableOperation.Merge(user);
                 await userTable.ExecuteAsync(update);
             }
             catch (Exception ex)
             {
+                if (Logger != null)
+                {
+                    Logger.Error("UpdateUserAsync Exception", ex);
+                }
                 return new Status<string>(false, ex.Message);
             }
             return new Status<string>(true);

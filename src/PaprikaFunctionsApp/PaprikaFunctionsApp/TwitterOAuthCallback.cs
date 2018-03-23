@@ -89,6 +89,8 @@ namespace PaprikaFunctionsApp
             }
             else
             {
+                log.Info("User update failed");
+
                 return req.CreateResponse<string>(HttpStatusCode.InternalServerError, "Update user failed: " + result.Attachment);
             }
         }
