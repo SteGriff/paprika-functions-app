@@ -29,5 +29,25 @@ namespace PaprikaFunctionsApp.Common.Tests
 
             Assert.AreEqual(expected, actual);
         }
+
+        [TestMethod]
+        public void UserEntity_DisconnectFromTwitter_RemovesDetails()
+        {
+            //Arrange
+            var userEntity = new UserEntity("test", "testPassword", false)
+            {
+                OAuthToken = "abcdefg",
+                OAuthTokenSecret = "hijklmnop",
+                TwitterId = 1234567,
+                TwitterUsername = "mdo"              
+            };
+
+            //Act
+            userEntity.DisconnectTwitter();
+
+            //Assert
+            Assert.AreEqual("", userEntity.TwitterUsername);
+            Assert.AreEqual("", userEntity.OAuthTokenSecret);
+        }
     }
 }

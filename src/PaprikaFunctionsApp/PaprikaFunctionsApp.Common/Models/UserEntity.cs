@@ -49,6 +49,14 @@ namespace PaprikaFunctionsApp.Common.Models
             }
         }
 
+        public void DisconnectTwitter()
+        {
+            OAuthToken = "";
+            OAuthTokenSecret = "";
+            TwitterUsername = "";
+            TwitterId = 0;
+        }
+
         public override string ToString()
         {
             return string.Format("UserEntity PKey:{4}, RowKey:{5}, @{0}, {1}, '{2}' every {3} mins",

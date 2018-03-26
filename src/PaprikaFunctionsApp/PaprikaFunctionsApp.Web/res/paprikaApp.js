@@ -63,6 +63,10 @@ paprikaApp.controller('MainController', ['$scope', '$http', 'localStorageService
         url: $scope.baseUrl + '/api/Twitter/Set',
         key: 'oEa3pp2frOMvPlzxaCQKNsUdGfgEfIoYr2DZAyS6m2jdPnBxbHwx9Q=='
     };
+    $scope.twitterDisconnectEndpoint = {
+        url: $scope.baseUrl + '/api/Twitter/Disconnect',
+        key: 'owTY277yezU4bkvaiacdPT74iXxqbWfafPYKip9ssaXfMVe7rapgCA=='
+    };
 
     //Set by DOM:
     //$scope.isAnon;
@@ -304,6 +308,7 @@ paprikaApp.controller('MainController', ['$scope', '$http', 'localStorageService
         var scheduleSaved = function (response) {
             console.log("scheduleSaved", response);
             $scope.report(true, "Saved!", "Your tweet schedule was saved");
+            $scope.twitterError = "";
             $scope.closeDialog();
         }
 
@@ -326,6 +331,22 @@ paprikaApp.controller('MainController', ['$scope', '$http', 'localStorageService
 
         event.preventDefault();
         return false;
+    }
+
+    $scope.disconnectTwitter = function () {
+        console.log("Disconnect Twitter...");
+
+        var setTwitterData = function (response) {
+            $scope.twitter = null;
+            $scope.report(true, "Twitter", "Account disconnected");
+        }
+
+        var complain = function () {
+            $scope.twitterError = "Hmmm... Failed to disconnect from your twitter account (you could remove the PaprikaLanguage app from your Twitter settings instead).";
+        }
+
+        var options = $scope.getOptions($scope.twitterDisconnectEndpoint);
+        $scope.webRequest(options, setTwitterData, complain);
     }
 
     $scope.isLoading = false;

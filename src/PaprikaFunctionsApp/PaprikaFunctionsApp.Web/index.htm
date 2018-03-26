@@ -278,6 +278,11 @@
                     Connected to <a ng-href="https://twitter.com/{{twitter.TwitterUsername}}">
                         <b>@<span ng-bind="twitter.TwitterUsername"></span></b>
                     </a>
+                    <button class="b pa1 input-reset
+        				    b--black-80 black-80 bg-white bw1 ba
+				            pointer dib" ng-click="disconnectTwitter()">
+                        Disconnect
+                    </button>
                 </p>
                 <p><small>Last posted: <span ng-bind="twitter.ScheduleLastPosted"></span></small></p>
                 <form>

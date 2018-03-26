@@ -6,17 +6,18 @@ using PaprikaFunctionsApp.Common.Models;
 using System;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace PaprikaFunctionsApp
 {
-    public static class TwitterGet
+    public static class TwitterDisconnect
     {
         private static AzureStorageProvider _storageProvider;
 
-        [FunctionName("TwitterGet")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "Twitter/Get")]HttpRequestMessage req, TraceWriter log)
+        [FunctionName("TwitterDisconnect")]
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = "Twitter/Disconnect")]HttpRequestMessage req, TraceWriter log)
         {
-            log.Info("TwitterGet started");
+            log.Info("TwitterDisconnect started");
 
             try
             {
@@ -34,20 +35,12 @@ namespace PaprikaFunctionsApp
             {
                 return authenticationStatus.Attachment;
             }
-            
+
             var users = new UserUtilities(_storageProvider);
             var user = users.GetUser(authorisation.Username);
-            var userTwitterModel = new UserTwitterViewModel(user);
+            user.DisconnectTwitter();
             
-            if (!string.IsNullOrEmpty(userTwitterModel.TwitterUsername))
-            {
-                return req.CreateResponse<UserTwitterViewModel>(HttpStatusCode.OK, userTwitterModel, "application/json");
-            }
-            else
-            {
-                //Return a null response if username is not set
-                return req.CreateResponse<UserTwitterViewModel>(HttpStatusCode.OK, null, "application/json");
-            }
+            return req.CreateResponse(HttpStatusCode.OK, "Done");
         }
     }
 }
